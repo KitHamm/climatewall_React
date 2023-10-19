@@ -1,12 +1,12 @@
 import { gql } from "@apollo/client";
 
-export const ADD_WORD = gql`
-    mutation addWord($word: String!) {
-        createWord(data: { word: $word }) {
+export const ADD_RESPONSE = gql`
+    mutation addResponse($response: String!) {
+        createResponse(data: { response: $response }) {
             data {
                 id
                 attributes {
-                    word
+                    response
                     approved
                 }
             }
@@ -14,13 +14,52 @@ export const ADD_WORD = gql`
     }
 `;
 
-export const ADD_QUESTION = gql`
-    mutation addQuestion($question: String!) {
-        createQuestion(data: { question: $question }) {
+export const ADD_qRESPONSE = gql`
+    mutation addResponse($response: String!, $question: String!) {
+        createQRepsonse(data: { response: $response, question: $question }) {
             data {
                 id
                 attributes {
+                    response
                     question
+                }
+            }
+        }
+    }
+`;
+
+export const QUESTIONS = gql`
+    query {
+        questions(
+            filters: { approved: { eq: true } }
+            sort: ["createdAt:asc"]
+        ) {
+            data {
+                attributes {
+                    question
+                }
+            }
+        }
+    }
+`;
+
+export const CURRENT_QUESTION = gql`
+    query {
+        currentQuestion {
+            data {
+                attributes {
+                    number
+                }
+            }
+        }
+    }
+`;
+
+export const AWAIT_APPROVAL = gql`
+    query response($id: ID) {
+        response(id: $id) {
+            data {
+                attributes {
                     approved
                 }
             }
