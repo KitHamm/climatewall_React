@@ -69,7 +69,7 @@ function Form(props) {
     const [
         addResponse,
         { loading: loadingResponse, error: errorResponse, data: dataResponse },
-    ] = useMutation(ADD_RESPONSE, { variables: { response: response } });
+    ] = useMutation(ADD_RESPONSE);
     const [
         addQResponse,
         {
@@ -81,7 +81,9 @@ function Form(props) {
     /* eslint-enable no-unused-vars */
     function handleAddResponse(e, questionResp) {
         e.preventDefault();
-        addResponse();
+        addResponse({
+            variables: { question: questionResp, response: response },
+        });
         addQResponse({
             variables: { question: questionResp, response: response },
         });
@@ -113,24 +115,32 @@ function Form(props) {
                     </div>
 
                     <div className="col-6 text-start">
-                        <button
-                            className="btn btn-danger"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                setResponse("");
-                            }}>
-                            Clear
-                        </button>
+                        {response !== "" ? (
+                            <button
+                                className="btn fade-in btn-climate"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setResponse("");
+                                }}>
+                                Clear
+                            </button>
+                        ) : (
+                            ""
+                        )}
                     </div>
                     <div className="col-6 text-end">
-                        <button
-                            className="btn btn-success"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                handleAddResponse(e, props.question);
-                            }}>
-                            Submit
-                        </button>
+                        {response !== "" ? (
+                            <button
+                                className="btn fade-in btn-climate"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleAddResponse(e, props.question);
+                                }}>
+                                Submit
+                            </button>
+                        ) : (
+                            ""
+                        )}
                     </div>
                 </div>
             </div>
@@ -156,27 +166,47 @@ function AwaitApproval(props) {
         <section id="add-word">
             <div className="row mt-5 text-center">
                 <div className="col-12">
-                    <h5>{approved == null ? "Awaiting Approval" : ""}</h5>
+                    <h5>{approved === null ? "Awaiting Approval" : ""}</h5>
                     <h5>
-                        {approved == null ? (
+                        {approved === null ? (
                             <Spinner />
                         ) : approved ? (
-                            "Approved!"
+                            <h5 className="fade-in">
+                                {data.response.data.attributes.reason}
+                            </h5>
                         ) : (
-                            "Sorry, our moderators deemed this response to be inappropriate."
+                            <h5 className="fade-in">
+                                {data.response.data.attributes.reason}
+                            </h5>
                         )}
                     </h5>
                 </div>
             </div>
+            {approved !== null ? (
+                <div className="row fade-in mt-4">
+                    <div className="col-12 text-center">
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                window.location.reload();
+                            }}
+                            className="btn btn-climate">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            ) : (
+                ""
+            )}
         </section>
     );
 }
 
 function Spinner() {
     return (
-        <>
+        <div className="fade-in">
             <span class="loader mt-5"></span>
             <h5 className="mt-3">Please do not leave this page.</h5>
-        </>
+        </div>
     );
 }

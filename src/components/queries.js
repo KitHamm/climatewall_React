@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const ADD_RESPONSE = gql`
-    mutation addResponse($response: String!) {
-        createResponse(data: { response: $response }) {
+    mutation addResponse($response: String!, $question: String!) {
+        createResponse(data: { response: $response, question: $question }) {
             data {
                 id
                 attributes {
@@ -61,6 +61,7 @@ export const AWAIT_APPROVAL = gql`
             data {
                 attributes {
                     approved
+                    reason
                 }
             }
         }

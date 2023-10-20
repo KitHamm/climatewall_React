@@ -5,6 +5,8 @@ body {
         "Helvetica Neue", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: rgb(15, 140, 110) !important;
+    color: white !important;
 }
 
 code {
@@ -22,6 +24,8 @@ input[type="text"] {
     resize: none;
     width: 100%;
     height: -webkit-fill-available;
+    box-shadow: 12.5px 12.5px 10px rgba(0, 0, 0, 0.025),
+        100px 100px 80px rgba(0, 0, 0, 0.05);
 }
 .loader {
     width: 48px;
@@ -44,7 +48,7 @@ input[type="text"] {
     height: 40px;
     border-radius: 50%;
     border: 3px solid;
-    border-color: #ff3d00 transparent;
+    border-color: #ffffff transparent;
 }
 
 @keyframes rotation {
@@ -53,5 +57,63 @@ input[type="text"] {
     }
     100% {
         transform: rotate(360deg);
+    }
+}
+.btn-climate {
+    background-color: rgb(0, 220, 160) !important;
+    border-radius: 0rem !important;
+    color: white !important;
+    box-shadow: 12.5px 12.5px 10px rgba(0, 0, 0, 0.025),
+        100px 100px 80px rgba(0, 0, 0, 0.05);
+}
+.fade-in {
+    animation: fadeIn ease 0.33s;
+    -webkit-animation: fadeIn ease 0.33s;
+    -moz-animation: fadeIn ease 0.33s;
+    -o-animation: fadeIn ease 0.33s;
+    -ms-animation: fadeIn ease 0.33s;
+}
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1 !important;
+    }
+}
+
+@-moz-keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@-o-keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@-ms-keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
     }
 }
