@@ -37,6 +37,9 @@ input[type="text"] {
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
 }
+.response-text {
+    font-size: 12pt;
+}
 .loader::after {
     content: "";
     box-sizing: border-box;

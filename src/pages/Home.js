@@ -82,7 +82,10 @@ function Form(props) {
     function handleAddResponse(e, questionResp) {
         e.preventDefault();
         addResponse({
-            variables: { question: questionResp, response: response },
+            variables: {
+                question: questionResp,
+                response: response.toLowerCase(),
+            },
         });
         addQResponse({
             variables: { question: questionResp, response: response },
@@ -171,13 +174,13 @@ function AwaitApproval(props) {
                         {approved === null ? (
                             <Spinner />
                         ) : approved ? (
-                            <h5 className="fade-in">
+                            <h5 className="fade-in response-text">
                                 {data.response.data.attributes.reason}
                             </h5>
                         ) : (
-                            <h5 className="fade-in">
+                            <p className="fade-in response-text">
                                 {data.response.data.attributes.reason}
-                            </h5>
+                            </p>
                         )}
                     </h5>
                 </div>
@@ -205,7 +208,7 @@ function AwaitApproval(props) {
 function Spinner() {
     return (
         <div className="fade-in">
-            <span class="loader mt-5"></span>
+            <span className="loader mt-5"></span>
             <h5 className="mt-3">Please do not leave this page.</h5>
         </div>
     );
