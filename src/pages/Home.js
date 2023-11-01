@@ -6,66 +6,269 @@ import {
     QUESTIONS,
     CURRENT_QUESTION,
     AWAIT_APPROVAL,
+    QUEUE_AWAIT_APPROVAL,
+    QUEUE_AWAIT_WALL,
+    ON_WALL,
+    GET_AWAITING,
 } from "../components/queries";
+import falmouthExeterPlus from "../images/falmoutexeterplus.svg";
+import SU from "../images/su.svg";
+import FalUni from "../images/FalUni.svg";
+import ExeterLogo from "../images/exeter-uni-logo.svg";
+import Help from "../images/help-button.svg";
+import Smile from "../images/smile.svg";
+import Sad from "../images/sad.svg";
+import Load from "../images/load.png";
 
 export default function Home() {
     const { loading, error, data } = useQuery(QUESTIONS);
-    const [view, setView] = useState(1);
+    const [view, setView] = useState(0);
     const [id, setId] = useState(0);
+    const [questionUpdated, setQuestionUpdated] = useState("");
     const {
         loading: loadingQID,
         error: errorQID,
         data: dataQID,
     } = useQuery(CURRENT_QUESTION);
-    if (loading || loadingQID) return <div>Loading</div>;
-    if (error || errorQID) return <div>Error</div>;
-    if (data && dataQID) {
-        return (
-            <>
-                <div className="container">
-                    <section id="header">
-                        <div className="row mt-5 text-center">
-                            <div className="col-12">
-                                <h2>Welcome to Climate Wall!</h2>
-                            </div>
-                        </div>
-                    </section>
-                    <section id="header">
-                        <div className="row mt-5 text-center">
-                            <div className="col-12">
-                                <h2>
-                                    {
-                                        data.questions.data[
-                                            dataQID.currentQuestion.data
-                                                .attributes.number
-                                        ].attributes.question
-                                    }
-                                </h2>
-                            </div>
-                        </div>
-                    </section>
-                    {view === 1 ? (
-                        <Form
-                            onViewChange={setView}
-                            onIdChange={setId}
-                            question={
-                                data.questions.data[
-                                    dataQID.currentQuestion.data.attributes
-                                        .number
-                                ].attributes.question
-                            }
-                        />
-                    ) : (
-                        <AwaitApproval id={id} />
-                    )}
-                </div>
-            </>
-        );
+    function handleChangeView(newView) {
+        setView(newView);
     }
+    useEffect(() => {
+        if (dataQID) {
+            setQuestionUpdated(
+                dataQID.currentQuestion.data.attributes.updatedAt
+            );
+        }
+    }, [dataQID]);
+    if (loading || loadingQID) return <Splash />;
+    if (error || errorQID) return <Error />;
+    if (data && dataQID) {
+        switch (view) {
+            case 0:
+                return <Landing onViewChange={handleChangeView} />;
+            case 3:
+                return <Terms onViewChange={handleChangeView} />;
+            default:
+                return (
+                    <>
+                        <div className="container">
+                            <section id="header">
+                                <div className="row mt-5 text-center">
+                                    <div className="col-12">
+                                        <div className="cw-title-green">
+                                            #ClimateWall
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            {view === 1 ? (
+                                <>
+                                    <section id="header">
+                                        <div className="row mt-5">
+                                            <div className="col-12">
+                                                <div className="cw-question">
+                                                    {
+                                                        data.questions.data[
+                                                            dataQID
+                                                                .currentQuestion
+                                                                .data.attributes
+                                                                .number
+                                                        ].attributes.question
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+                                    <Form
+                                        onViewChange={handleChangeView}
+                                        onIdChange={setId}
+                                        question={
+                                            data.questions.data[
+                                                dataQID.currentQuestion.data
+                                                    .attributes.number
+                                            ].attributes.question
+                                        }
+                                    />
+                                </>
+                            ) : view === 2 ? (
+                                <AwaitApproval
+                                    questionUpdatedAt={questionUpdated}
+                                    id={id}
+                                />
+                            ) : (
+                                ""
+                            )}
+                        </div>
+                        <InfoPage />
+                    </>
+                );
+        }
+    }
+}
+function InfoPage(props) {
+    return (
+        <>
+            <dialog id="info">
+                <div className="container">
+                    <div className="row mt-3">
+                        <div className="col-8">
+                            <div className="cw-title-green">#ClimateWall</div>
+                        </div>
+                        <div
+                            onClick={(e) => {
+                                e.preventDefault();
+                                document.getElementById("info").close();
+                                document.body.style.overflow = null;
+                            }}
+                            className="col-4 mt-3 text-end close-button">
+                            &times;
+                        </div>
+                    </div>
+                    <div className="row">
+                        <h1>How does it work?</h1>
+                    </div>
+                    <div className="row mt-5">
+                        <div className="col-12">
+                            <h3>1. Lorem ipsum</h3>
+                        </div>
+                        <div className="col-12">
+                            <h3>2. Lorem ipsum</h3>
+                        </div>
+                        <div className="col-12">
+                            <h3>3. Lorem ipsum</h3>
+                        </div>
+                        <div className="col-12">
+                            <h3>4. Lorem ipsum</h3>
+                        </div>
+                        <div className="col-12">
+                            <h3>5. Lorem ipsum</h3>
+                        </div>
+                    </div>
+                    <div className="row mt-5">
+                        <div className="col-12">
+                            <h2>Lorem ipsum</h2>
+                        </div>
+                        <div className="col-12">
+                            <p>
+                                Lorem ipsum, dolor sit amet consectetur
+                                adipisicing elit. Suscipit non voluptatibus,
+                                ratione ea magni, rem atque architecto inventore
+                                eum, molestias veniam quis voluptatem?
+                                Voluptatum asperiores eum vero nam quos impedit!
+                            </p>
+                        </div>
+                    </div>
+                    <div className="row mt-3">
+                        <div className="col-12">
+                            <h2>Lorem ipsum</h2>
+                        </div>
+                        <div className="col-12">
+                            <p>
+                                Lorem ipsum, dolor sit amet consectetur
+                                adipisicing elit. Suscipit non voluptatibus,
+                                ratione ea magni, rem atque architecto inventore
+                                eum, molestias veniam quis voluptatem?
+                                Voluptatum asperiores eum vero nam quos impedit!
+                            </p>
+                        </div>
+                    </div>
+                    <div className="row mt-3">
+                        <div className="col-12">
+                            <h2>Lorem ipsum</h2>
+                        </div>
+                        <div className="col-12">
+                            <p>
+                                Lorem ipsum, dolor sit amet consectetur
+                                adipisicing elit. Suscipit non voluptatibus,
+                                ratione ea magni, rem atque architecto inventore
+                                eum, molestias veniam quis voluptatem?
+                                Voluptatum asperiores eum vero nam quos impedit!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </dialog>
+        </>
+    );
+}
+function Landing(props) {
+    return (
+        <>
+            <Splash />
+            <div className="start">
+                <div className="container">
+                    <div className="row mt-5">
+                        <div className="col-12 mt-5 text-center">
+                            <div
+                                className="cw-sub-white"
+                                style={{ fontSize: "20px" }}>
+                                Welcome to
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row mt-3">
+                        <div className="col-12 text-center">
+                            <h1 className="cw-title">#ClimateWall</h1>
+                        </div>
+                    </div>
+                    <div className="row mt-3">
+                        <div className="col-10 offset-1 text-center">
+                            <div
+                                className="cw-sub-white"
+                                style={{ fontSize: "20px" }}>
+                                How will you response to the climate issues of
+                                today?
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row mt-5">
+                        <div className="col-12 text-center">
+                            <button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    props.onViewChange(3);
+                                }}
+                                className="btn btn-climate">
+                                {"START"}
+                            </button>
+                        </div>
+                    </div>
+                    <div className="row mt-5">
+                        <div
+                            onClick={(e) => {
+                                e.preventDefault();
+                                document.getElementById("info").showModal();
+                                document.body.style.overflow = "hidden";
+                            }}
+                            className="col-12 info-link text-center">
+                            How does it work? {">"}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <InfoPage />
+        </>
+    );
 }
 function Form(props) {
     const [response, setResponse] = useState("");
+    const [view, setView] = useState(0);
     /* eslint-disable no-unused-vars */
+    const {
+        loading: nullLoading,
+        error: nullError,
+        data: nullData,
+    } = useQuery(GET_AWAITING);
+    const {
+        loading: awaitWallLoading,
+        error: awaitWallError,
+        data: awaitWallData,
+    } = useQuery(QUEUE_AWAIT_WALL);
+    const {
+        loading: onWallLoading,
+        error: onWallError,
+        data: onWallData,
+    } = useQuery(ON_WALL);
     const [
         addResponse,
         { loading: loadingResponse, error: errorResponse, data: dataResponse },
@@ -97,119 +300,544 @@ function Form(props) {
             props.onViewChange(2);
         }
     }, [dataResponse, dataQResponse, props]);
-    return (
-        <section id="add-word">
-            <div className="row mt-5 text-center">
-                <div className="col-12">
-                    <h5>Create your response</h5>
-                </div>
-            </div>
-            <div className="container">
-                <div className="row mt-3">
-                    <div className="col-12">
-                        <input
-                            type="text"
-                            value={response}
-                            placeholder="Type your response..."
-                            onChange={(e) => {
-                                setResponse(e.target.value);
-                            }}
-                        />
-                    </div>
-
-                    <div className="col-6 text-start">
-                        {response !== "" ? (
-                            <button
-                                className="btn fade-in btn-climate"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    setResponse("");
-                                }}>
-                                Clear
-                            </button>
-                        ) : (
-                            ""
-                        )}
-                    </div>
-                    <div className="col-6 text-end">
-                        {response !== "" ? (
-                            <button
-                                className="btn fade-in btn-climate"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    handleAddResponse(e, props.question);
-                                }}>
-                                Submit
-                            </button>
-                        ) : (
-                            ""
-                        )}
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
+    useEffect(() => {
+        if (onWallData && awaitWallData && nullData) {
+            if (
+                onWallData.responses.data.length +
+                    awaitWallData.responses.data.length >=
+                8
+            ) {
+                setView(2);
+            } else if (
+                onWallData.responses.data.length +
+                    awaitWallData.responses.data.length +
+                    nullData.responses.data.length >=
+                8
+            ) {
+                setView(1);
+            }
+        }
+    }, [onWallData, awaitWallData, nullData]);
+    if (awaitWallLoading || onWallLoading || nullLoading) return <Loader />;
+    if (awaitWallError || onWallError || nullError) return <Error />;
+    if (onWallData && awaitWallData && nullData) {
+        switch (view) {
+            case 1:
+                return (
+                    <section id="add-word">
+                        <div className="row mt-5">
+                            <div className="col-10 offset-1">
+                                <div
+                                    style={{ fontSize: "15pt" }}
+                                    className="cw-response-info-green">
+                                    We have had a high number of responses for
+                                    this question.
+                                </div>
+                            </div>
+                        </div>
+                        <div className="row mt-3">
+                            <div className="col-10 offset-1">
+                                <p
+                                    style={{ fontSize: "16pt" }}
+                                    className="cw-response-info-text">
+                                    Your response may not make it onto the wall,
+                                    but we would still very much like to hear
+                                    from you.
+                                </p>
+                                <p className="cw-response-info-text">
+                                    Would you like to continue?
+                                </p>
+                            </div>
+                        </div>
+                        <div className="row mt-3">
+                            <div className="col-10 offset-1 text-center">
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setView(0);
+                                    }}
+                                    className="btn btn-climate">
+                                    Continue
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                );
+            case 2:
+                return (
+                    <section id="add-word">
+                        <div className="row mt-3">
+                            <div className="col-10 offset-1">
+                                <p
+                                    style={{ fontSize: "16pt" }}
+                                    className="cw-response-info-green">
+                                    Responses for this question are full at the
+                                    moment, but we would still very much like to
+                                    hear from you.
+                                </p>
+                                <p className="cw-response-info-text">
+                                    Would you like to continue?
+                                </p>
+                            </div>
+                        </div>
+                        <div className="row mt-3">
+                            <div className="col-10 offset-1 text-center">
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setView(0);
+                                    }}
+                                    className="btn btn-climate">
+                                    Continue
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                );
+            default:
+                return (
+                    <section id="add-word">
+                        <div className="row mt-5">
+                            <div className="col-7 offset-1">
+                                <div className="cw-response-info">
+                                    Your response:
+                                </div>
+                            </div>
+                            <div className="col-3">
+                                <label
+                                    className="cw-response-info"
+                                    style={
+                                        response.length < 151
+                                            ? { float: "inline-end" }
+                                            : {
+                                                  float: "inline-end",
+                                                  color: "red",
+                                              }
+                                    }>
+                                    {response.length}/150
+                                </label>
+                            </div>
+                        </div>
+                        <div className="row mt-3">
+                            <div className="col-10 offset-1">
+                                <textarea
+                                    value={response}
+                                    placeholder="Start typing..."
+                                    onChange={(e) => {
+                                        setResponse(e.target.value);
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        <div style={{ height: "55px" }} className="row mt-3">
+                            <div className="col-5 offset-1">
+                                {response !== "" && response.length < 151 ? (
+                                    <button
+                                        className="btn fade-in btn-climate"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleAddResponse(
+                                                e,
+                                                props.question
+                                            );
+                                        }}>
+                                        Submit
+                                    </button>
+                                ) : (
+                                    ""
+                                )}
+                            </div>
+                            <div className="col-3 offset-2 help-container text-end">
+                                <img
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        document
+                                            .getElementById("info")
+                                            .showModal();
+                                        document.body.style.overflow = "hidden";
+                                    }}
+                                    className="help-icon"
+                                    src={Help}
+                                    alt="Help"
+                                />
+                            </div>
+                        </div>
+                    </section>
+                );
+        }
+    }
 }
 
 function AwaitApproval(props) {
     const [approved, setApproved] = useState(null);
+    const [onWall, setOnWall] = useState(false);
+    const [dataLength, setDataLength] = useState(0);
+    const [queueLength, setQueueLength] = useState(0);
+    const [place, setPlace] = useState(0);
+    const [wallPlace, setWallPlace] = useState(0);
     /* eslint-disable no-unused-vars */
-    const { loading, error, data, stopPolling } = useQuery(AWAIT_APPROVAL, {
+    const {
+        loading: onWallLoading,
+        error: onWallError,
+        data: onWallData,
+        stopPolling: stopPollingWallData,
+    } = useQuery(ON_WALL, {
+        pollInterval: 500,
+    });
+    const {
+        loading: awaitLoading,
+        error: awaitError,
+        data: awaitData,
+        stopPolling,
+    } = useQuery(AWAIT_APPROVAL, {
         pollInterval: 500,
         variables: { id: props.id },
     });
+    const {
+        loading: queueLoading,
+        error: queueError,
+        data: queueData,
+        stopPolling: stopPollingQueue,
+    } = useQuery(QUEUE_AWAIT_APPROVAL, {
+        pollInterval: 500,
+    });
+    const {
+        loading: wallLoading,
+        error: wallError,
+        data: wallData,
+        stopPolling: stopPollingWall,
+    } = useQuery(QUEUE_AWAIT_WALL, {
+        pollInterval: 500,
+    });
+    if (awaitLoading || queueLoading || wallLoading || onWallLoading)
+        return <Loader />;
+    if (awaitError || queueError || wallError || onWallError) return <Error />;
     /* eslint-enable no-unused-vars */
-    if (data) {
-        if (data.response.data.attributes.approved !== approved) {
-            setApproved(data.response.data.attributes.approved);
+    if (awaitData && queueData && wallData && onWallData) {
+        if (
+            queueLength !== queueData.responses.data.length &&
+            awaitData.response.data.attributes.approved === null
+        ) {
+            for (let i = 0; i < queueData.responses.data.length; i++) {
+                if (queueData.responses.data[i].id === props.id) {
+                    setPlace(i + 1);
+                    break;
+                }
+            }
+            setQueueLength(queueData.responses.data.length);
+        }
+        if (
+            dataLength !== wallData.responses.data.length &&
+            awaitData.response.data.attributes.approved === true
+        ) {
+            for (let i = 0; i < wallData.responses.data.length; i++) {
+                if (wallData.responses.data[i].id === props.id) {
+                    setWallPlace(i + 1);
+                    break;
+                }
+            }
+            setDataLength(wallData.responses.data.length);
+        }
+        if (awaitData.response.data.attributes.approved !== approved) {
+            setApproved(awaitData.response.data.attributes.approved);
+        }
+        if (awaitData.response.data.attributes.onWall !== onWall) {
+            setOnWall(awaitData.response.data.attributes.onWall);
             stopPolling();
+            stopPollingQueue();
+            stopPollingWall();
+            stopPollingWallData();
+        }
+        if (approved === false) {
+            stopPolling();
+            stopPollingQueue();
+            stopPollingWall();
+            stopPollingWallData();
+        }
+        if (approved && onWallData.responses.data.length >= 8) {
+            stopPolling();
+            stopPollingQueue();
+            stopPollingWall();
+            stopPollingWallData();
         }
     }
-    return (
-        <section id="add-word">
-            <div className="row mt-5 text-center">
-                <div className="col-12">
-                    <h5>{approved === null ? "Awaiting Approval" : ""}</h5>
-                    <h5>
-                        {approved === null ? (
-                            <Spinner />
-                        ) : approved ? (
-                            <h5 className="fade-in response-text">
-                                {data.response.data.attributes.reason}
-                            </h5>
-                        ) : (
-                            <p className="fade-in response-text">
-                                {data.response.data.attributes.reason}
-                            </p>
-                        )}
-                    </h5>
+    if (place !== 0) {
+        return (
+            <section id="add-word">
+                <div className="row mt-5">
+                    {approved === null ? (
+                        <>
+                            <div className="col-12 text-center">
+                                <ThinkingFace />
+                            </div>
+                            <div className="cw-response-info-text col-10 offset-1 mt-3">
+                                Hold tight! Your response is awaiting approval
+                                from out moderator.
+                            </div>
+                            <div className="cw-response-info-bold col-10 offset-1 mt-3">
+                                Your response is{" "}
+                                <div className="cw-response-info-green">
+                                    number {place}
+                                </div>{" "}
+                                in the queue.
+                            </div>
+                            <div className="cw-response-info-text col-10 offset-1 mt-3">
+                                Please do not leave this page or you will have
+                                to start again...
+                            </div>
+                        </>
+                    ) : approved ? (
+                        <>
+                            <div className="col-12 text-center mb-3">
+                                <SmilingFace />
+                            </div>
+                            <div className="cw-response-info-green col-10 offset-1 mt-3">
+                                Your response has been approved!
+                            </div>
+                            {onWallData.responses.data.length >= 8 ? (
+                                <div className="cw-response-info-bold col-10 offset-1 mt-3">
+                                    Sorry!
+                                </div>
+                            ) : onWall ? (
+                                <div className="cw-response-info-bold col-10 offset-1 mt-3">
+                                    Your response is on the wall!
+                                </div>
+                            ) : (
+                                <div className="cw-response-info-bold col-10 offset-1 mt-3">
+                                    Your response is{" "}
+                                    <div className="cw-response-info-green">
+                                        number {wallPlace}
+                                    </div>{" "}
+                                    in the queue for the wall.
+                                </div>
+                            )}
+                            {onWallData.responses.data.length >= 8 ? (
+                                <div className="cw-response-info-bold col-10 offset-1 mt-3">
+                                    Responses for this question are full. Please
+                                    try again with the next question.
+                                </div>
+                            ) : onWall ? (
+                                ""
+                            ) : (
+                                <div className="cw-response-info-text col-10 offset-1 mt-3">
+                                    Please be patient, your response will appear
+                                    on the wall shortly.
+                                </div>
+                            )}
+                        </>
+                    ) : (
+                        <>
+                            <div className="col-12 text-center">
+                                <SadFace />
+                            </div>
+                            <div className="cw-response-info-red col-10 offset-1 mt-3">
+                                {awaitData.response.data.attributes.reason}
+                            </div>
+                            <div className="cw-response-info-text col-10 offset-1 mt-3">
+                                Please try again or visit our help section for
+                                more info.
+                            </div>
+                        </>
+                    )}
                 </div>
-            </div>
-            {approved !== null ? (
-                <div className="row fade-in mt-4">
-                    <div className="col-12 text-center">
-                        <button
-                            onClick={(e) => {
-                                e.preventDefault();
-                                window.location.reload();
-                            }}
-                            className="btn btn-climate">
-                            Close
-                        </button>
+                {approved !== null ? (
+                    <div className="row fade-in mt-4">
+                        <div className="col-10 offset-1">
+                            <button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    window.location.reload();
+                                }}
+                                className="btn btn-climate">
+                                Start again
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    ""
+                )}
+                <div className="container mb-5 info-row">
+                    <div className="row">
+                        <div className="col-10 text-end">
+                            <img
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    document.getElementById("info").showModal();
+                                    document.body.style.overflow = "hidden";
+                                }}
+                                className="await-help-icon"
+                                src={Help}
+                                alt="Help"
+                            />
+                        </div>
                     </div>
                 </div>
-            ) : (
-                ""
-            )}
-        </section>
+            </section>
+        );
+    }
+}
+function Terms(props) {
+    return (
+        <div className="terms">
+            <div className="container">
+                <div className="row terms-row mt-4">
+                    <div className="cw-title-green">#ClimateWall</div>
+                    <div className="cw-sub-terms">Terms and conditions</div>
+                    <div className="cw-terms mt-4">
+                        The #ClimateWall is an interactive platform that
+                        encourages public interaction.
+                    </div>
+                    <div className="cw-terms-bold mt-4">
+                        Your participation is completely anonymous and we will
+                        not be collecting any data from your device whilst you
+                        use this app.
+                    </div>
+                    <div className="cw-terms mt-4">
+                        As the #ClimateWall is a shared public space we require
+                        you to read and accept the following terms and
+                        conditions before you can use this app and participate.
+                    </div>
+                    <div className="cw-terms-bold mt-4">Lorem ipsum</div>
+                    <div className="cw-terms">
+                        Lorem ipsum dolor sit amet, consectetur adipisicing
+                        elit. Unde ab ex vitae nulla voluptatibus dolorum
+                        voluptate nam eos consequatur aliquid. Eligendi hic at
+                        itaque dolores facere in nostrum, officiis ipsa.
+                    </div>
+                    <div className="cw-terms-bold mt-4">Lorem ipsum</div>
+                    <div className="cw-terms">
+                        Lorem ipsum dolor sit amet, consectetur adipisicing
+                        elit. Unde ab ex vitae nulla voluptatibus dolorum
+                        voluptate nam eos consequatur aliquid. Eligendi hic at
+                        itaque dolores facere in nostrum, officiis ipsa.
+                    </div>
+                    <div className="cw-terms-bold mt-4">Lorem ipsum</div>
+                    <div className="cw-terms">
+                        Lorem ipsum dolor sit amet, consectetur adipisicing
+                        elit. Unde ab ex vitae nulla voluptatibus dolorum
+                        voluptate nam eos consequatur aliquid. Eligendi hic at
+                        itaque dolores facere in nostrum, officiis ipsa.
+                    </div>
+                    <div className="cw-terms-bold mt-4">Lorem ipsum</div>
+                    <div className="cw-terms">
+                        Lorem ipsum dolor sit amet, consectetur adipisicing
+                        elit. Unde ab ex vitae nulla voluptatibus dolorum
+                        voluptate nam eos consequatur aliquid. Eligendi hic at
+                        itaque dolores facere in nostrum, officiis ipsa.
+                    </div>
+                    <hr className="cw-line" />
+                    <div className="cw-terms-bold">
+                        By selecting "accept and proceed" you agree to abide by
+                        the above terms and conditions.
+                    </div>
+                    <button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            props.onViewChange(1);
+                        }}
+                        className="btn btn-climate mt-4 mb-4">
+                        accept & proceed
+                    </button>
+                </div>
+            </div>
+        </div>
     );
 }
-
-function Spinner() {
+function Splash() {
     return (
-        <div className="fade-in">
-            <span className="loader mt-5"></span>
-            <h5 className="mt-3">Please do not leave this page.</h5>
+        <div className="floating fade-out">
+            <div className="container">
+                <div className="row mt-5">
+                    <div className="col-10 offset-1 mt-4 text-center">
+                        <h1 className="cw-sub">Welcome to</h1>
+                    </div>
+                    <div className="col-10 mt-4 offset-1 text-center">
+                        <h1 className="cw-title">#ClimateWall</h1>
+                    </div>
+                    <div className="col-10 mt-4 offset-1 text-center">
+                        <h1 className="cw-sub">Penryn Campus</h1>
+                    </div>
+                    <div className="col-12 mt-5 text-center">
+                        <img
+                            className="splash-logo-ex"
+                            src={ExeterLogo}
+                            alt="University Of Exeter"
+                        />
+                    </div>
+                    <div className="col-12">
+                        <img
+                            className="splash-logo-fu"
+                            src={FalUni}
+                            alt="Falmouth University"
+                        />
+                    </div>
+                    <div className="col-12">
+                        <img
+                            className="splash-logo-su"
+                            src={SU}
+                            alt="The Falmouth Exeter Students Union"
+                        />
+                    </div>
+                    <div className="col-12">
+                        <img
+                            className="splash-logo-fxp"
+                            src={falmouthExeterPlus}
+                            alt="Falmouth Exeter Plus"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+function ThinkingFace() {
+    return (
+        <div className="thinking mb-3">
+            <img className="load" src={Load} alt="Load" />
+        </div>
+    );
+}
+function SmilingFace() {
+    return <img className="smile" src={Smile} alt="Smile" />;
+}
+
+function SadFace() {
+    return <img className="sad" src={Sad} alt="Sad" />;
+}
+function Loader() {
+    return (
+        <div className="row">
+            <div className="col-12 text-center">
+                <div className="loader-container">
+                    <img className="load" src={Load} alt="Load" />
+                </div>
+            </div>
+        </div>
+    );
+}
+function Error() {
+    return (
+        <div className="error">
+            <div className="container">
+                <div className="row mt-5">
+                    <div className="col-10 offset-1 mt-5 mb-5 text-center">
+                        <div>
+                            <SadFace />
+                        </div>
+                        <div className="cw-response-info-red mt-3 text-center">
+                            Oh no!
+                        </div>
+                        <div className="cw-response-info-bold mt-5 text-center">
+                            It looks like there has been a problem with our
+                            servers.
+                        </div>
+                        <div className="cw-response-info-bold mt-5 text-center">
+                            Please bear with us while we try to fix the problem,
+                            and try again later.
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
