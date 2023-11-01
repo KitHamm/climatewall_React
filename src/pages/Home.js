@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { CSSTransition } from "react-transition-group";
 import { useMutation, useQuery } from "@apollo/client";
 import {
     ADD_RESPONSE,
@@ -19,10 +20,11 @@ import Help from "../images/help-button.svg";
 import Smile from "../images/smile.svg";
 import Sad from "../images/sad.svg";
 import Load from "../images/load.png";
-
 export default function Home() {
     const { loading, error, data } = useQuery(QUESTIONS);
+    const [transition, setTransition] = useState(true);
     const [view, setView] = useState(0);
+    const [selectView, setSelectView] = useState(0);
     const [id, setId] = useState(0);
     const [questionUpdated, setQuestionUpdated] = useState("");
     const {
@@ -31,8 +33,18 @@ export default function Home() {
         data: dataQID,
     } = useQuery(CURRENT_QUESTION);
     function handleChangeView(newView) {
-        setView(newView);
+        setSelectView(newView);
     }
+    useEffect(() => {
+        if (selectView !== view) {
+            setTransition(false);
+            setTimeout(() => {
+                setView(selectView);
+                setTransition(true);
+                console.log("Done");
+            }, 500);
+        }
+    }, [view, selectView]);
     useEffect(() => {
         if (dataQID) {
             setQuestionUpdated(
@@ -40,16 +52,19 @@ export default function Home() {
             );
         }
     }, [dataQID]);
+    let display = null;
     if (loading || loadingQID) return <Splash />;
     if (error || errorQID) return <Error />;
     if (data && dataQID) {
         switch (view) {
             case 0:
-                return <Landing onViewChange={handleChangeView} />;
+                display = <Landing onViewChange={handleChangeView} />;
+                break;
             case 3:
-                return <Terms onViewChange={handleChangeView} />;
+                display = <Terms onViewChange={handleChangeView} />;
+                break;
             default:
-                return (
+                display = (
                     <>
                         <div className="container">
                             <section id="header">
@@ -64,7 +79,7 @@ export default function Home() {
                             {view === 1 ? (
                                 <>
                                     <section id="header">
-                                        <div className="row mt-5">
+                                        <div className="row mt-3">
                                             <div className="col-12">
                                                 <div className="cw-question">
                                                     {
@@ -92,6 +107,7 @@ export default function Home() {
                                 </>
                             ) : view === 2 ? (
                                 <AwaitApproval
+                                    onViewChange={handleChangeView}
                                     questionUpdatedAt={questionUpdated}
                                     id={id}
                                 />
@@ -102,13 +118,34 @@ export default function Home() {
                         <InfoPage />
                     </>
                 );
+                break;
         }
+        return (
+            <CSSTransition
+                in={transition}
+                timeout={1000}
+                classNames={"transition"}>
+                {display}
+            </CSSTransition>
+        );
     }
 }
 function InfoPage(props) {
+    function handleClose() {
+        document
+            .getElementById("info")
+            .classList.replace("fade-in", "fade-out-info");
+        setTimeout(() => {
+            document.getElementById("info").close();
+            document.body.style.overflow = null;
+            document
+                .getElementById("info")
+                .classList.replace("fade-out-info", "fade-in");
+        }, 333);
+    }
     return (
         <>
-            <dialog id="info">
+            <dialog id="info" className="fade-in">
                 <div className="container">
                     <div className="row mt-3">
                         <div className="col-8">
@@ -117,8 +154,7 @@ function InfoPage(props) {
                         <div
                             onClick={(e) => {
                                 e.preventDefault();
-                                document.getElementById("info").close();
-                                document.body.style.overflow = null;
+                                handleClose();
                             }}
                             className="col-4 mt-3 text-end close-button">
                             &times;
@@ -194,11 +230,11 @@ function InfoPage(props) {
 function Landing(props) {
     return (
         <>
-            <Splash />
             <div className="start">
+                <Splash />
                 <div className="container">
                     <div className="row mt-5">
-                        <div className="col-12 mt-5 text-center">
+                        <div className="col-12 text-center">
                             <div
                                 className="cw-sub-white"
                                 style={{ fontSize: "20px" }}>
@@ -252,7 +288,9 @@ function Landing(props) {
 }
 function Form(props) {
     const [response, setResponse] = useState("");
+    const [transition, setTransition] = useState(true);
     const [view, setView] = useState(0);
+    const [selectView, setSelectView] = useState(0);
     /* eslint-disable no-unused-vars */
     const {
         loading: nullLoading,
@@ -295,6 +333,17 @@ function Form(props) {
         });
     }
     useEffect(() => {
+        if (selectView !== view) {
+            console.log("out");
+            setTransition(false);
+            setTimeout(() => {
+                setView(selectView);
+                setTransition(true);
+                console.log("In");
+            }, 500);
+        }
+    }, [view, selectView]);
+    useEffect(() => {
         if (dataResponse && dataQResponse) {
             props.onIdChange(dataResponse.createResponse.data.id);
             props.onViewChange(2);
@@ -308,6 +357,7 @@ function Form(props) {
                 8
             ) {
                 setView(2);
+                setSelectView(2);
             } else if (
                 onWallData.responses.data.length +
                     awaitWallData.responses.data.length +
@@ -315,162 +365,183 @@ function Form(props) {
                 8
             ) {
                 setView(1);
+                setSelectView(2);
             }
         }
     }, [onWallData, awaitWallData, nullData]);
-    if (awaitWallLoading || onWallLoading || nullLoading) return <Loader />;
+    if (awaitWallLoading || onWallLoading || nullLoading) return "";
     if (awaitWallError || onWallError || nullError) return <Error />;
     if (onWallData && awaitWallData && nullData) {
         switch (view) {
             case 1:
                 return (
-                    <section id="add-word">
-                        <div className="row mt-5">
-                            <div className="col-10 offset-1">
-                                <div
-                                    style={{ fontSize: "15pt" }}
-                                    className="cw-response-info-green">
-                                    We have had a high number of responses for
-                                    this question.
+                    <CSSTransition
+                        in={transition}
+                        timeout={1000}
+                        classNames={"transition"}>
+                        <section id="add-word" className="fade-in">
+                            <div className="row mt-5">
+                                <div className="col-10 offset-1">
+                                    <div
+                                        style={{ fontSize: "15pt" }}
+                                        className="cw-response-info-green">
+                                        We have had a high number of responses
+                                        for this question.
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="row mt-3">
-                            <div className="col-10 offset-1">
-                                <p
-                                    style={{ fontSize: "16pt" }}
-                                    className="cw-response-info-text">
-                                    Your response may not make it onto the wall,
-                                    but we would still very much like to hear
-                                    from you.
-                                </p>
-                                <p className="cw-response-info-text">
-                                    Would you like to continue?
-                                </p>
+                            <div className="row mt-3">
+                                <div className="col-10 offset-1">
+                                    <p
+                                        style={{ fontSize: "16pt" }}
+                                        className="cw-response-info-text">
+                                        Your response may not make it onto the
+                                        wall, but we would still very much like
+                                        to hear from you.
+                                    </p>
+                                    <p className="cw-response-info-text">
+                                        Would you like to continue?
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                        <div className="row mt-3">
-                            <div className="col-10 offset-1 text-center">
-                                <button
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        setView(0);
-                                    }}
-                                    className="btn btn-climate">
-                                    Continue
-                                </button>
+                            <div className="row mt-3">
+                                <div className="col-10 offset-1 text-center">
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setSelectView(0);
+                                        }}
+                                        className="btn btn-climate">
+                                        Continue
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    </section>
+                        </section>
+                    </CSSTransition>
                 );
             case 2:
                 return (
-                    <section id="add-word">
-                        <div className="row mt-3">
-                            <div className="col-10 offset-1">
-                                <p
-                                    style={{ fontSize: "16pt" }}
-                                    className="cw-response-info-green">
-                                    Responses for this question are full at the
-                                    moment, but we would still very much like to
-                                    hear from you.
-                                </p>
-                                <p className="cw-response-info-text">
-                                    Would you like to continue?
-                                </p>
+                    <CSSTransition
+                        in={transition}
+                        timeout={1000}
+                        classNames={"transition"}>
+                        <section id="add-word" className="fade-in">
+                            <div className="row mt-3">
+                                <div className="col-10 offset-1">
+                                    <p
+                                        style={{ fontSize: "16pt" }}
+                                        className="cw-response-info-green">
+                                        Responses for this question are full at
+                                        the moment, but we would still very much
+                                        like to hear from you.
+                                    </p>
+                                    <p className="cw-response-info-text">
+                                        Would you like to continue?
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                        <div className="row mt-3">
-                            <div className="col-10 offset-1 text-center">
-                                <button
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        setView(0);
-                                    }}
-                                    className="btn btn-climate">
-                                    Continue
-                                </button>
+                            <div className="row mt-3">
+                                <div className="col-10 offset-1 text-center">
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setSelectView(0);
+                                        }}
+                                        className="btn btn-climate">
+                                        Continue
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    </section>
+                        </section>
+                    </CSSTransition>
                 );
             default:
                 return (
-                    <section id="add-word">
-                        <div className="row mt-5">
-                            <div className="col-7 offset-1">
-                                <div className="cw-response-info">
-                                    Your response:
+                    <CSSTransition
+                        in={transition}
+                        timeout={1000}
+                        classNames={"transition"}>
+                        <section id="add-word" className="fade-in">
+                            <div className="row mt-5">
+                                <div className="col-7 offset-1">
+                                    <div className="cw-response-info">
+                                        Your response:
+                                    </div>
+                                </div>
+                                <div className="col-3">
+                                    <label
+                                        className="cw-response-info"
+                                        style={
+                                            response.length < 151
+                                                ? { float: "inline-end" }
+                                                : {
+                                                      float: "inline-end",
+                                                      color: "red",
+                                                  }
+                                        }>
+                                        {response.length}/150
+                                    </label>
                                 </div>
                             </div>
-                            <div className="col-3">
-                                <label
-                                    className="cw-response-info"
-                                    style={
-                                        response.length < 151
-                                            ? { float: "inline-end" }
-                                            : {
-                                                  float: "inline-end",
-                                                  color: "red",
-                                              }
-                                    }>
-                                    {response.length}/150
-                                </label>
+                            <div className="row mt-3">
+                                <div className="col-10 offset-1">
+                                    <textarea
+                                        value={response}
+                                        placeholder="Start typing..."
+                                        onChange={(e) => {
+                                            setResponse(e.target.value);
+                                        }}
+                                    />
+                                </div>
                             </div>
-                        </div>
-                        <div className="row mt-3">
-                            <div className="col-10 offset-1">
-                                <textarea
-                                    value={response}
-                                    placeholder="Start typing..."
-                                    onChange={(e) => {
-                                        setResponse(e.target.value);
-                                    }}
-                                />
-                            </div>
-                        </div>
-                        <div style={{ height: "55px" }} className="row mt-3">
-                            <div className="col-5 offset-1">
-                                {response !== "" && response.length < 151 ? (
-                                    <button
-                                        className="btn fade-in btn-climate"
+                            <div
+                                style={{ height: "55px" }}
+                                className="row mt-3">
+                                <div className="col-5 offset-1">
+                                    {response !== "" &&
+                                    response.length < 151 ? (
+                                        <button
+                                            className="btn fade-in btn-climate"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                handleAddResponse(
+                                                    e,
+                                                    props.question
+                                                );
+                                            }}>
+                                            Submit
+                                        </button>
+                                    ) : (
+                                        ""
+                                    )}
+                                </div>
+                                <div className="col-3 offset-2 help-container text-end">
+                                    <img
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            handleAddResponse(
-                                                e,
-                                                props.question
-                                            );
-                                        }}>
-                                        Submit
-                                    </button>
-                                ) : (
-                                    ""
-                                )}
+                                            document
+                                                .getElementById("info")
+                                                .showModal();
+                                            document.body.style.overflow =
+                                                "hidden";
+                                        }}
+                                        className="help-icon"
+                                        src={Help}
+                                        alt="Help"
+                                    />
+                                </div>
                             </div>
-                            <div className="col-3 offset-2 help-container text-end">
-                                <img
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        document
-                                            .getElementById("info")
-                                            .showModal();
-                                        document.body.style.overflow = "hidden";
-                                    }}
-                                    className="help-icon"
-                                    src={Help}
-                                    alt="Help"
-                                />
-                            </div>
-                        </div>
-                    </section>
+                        </section>
+                    </CSSTransition>
                 );
         }
     }
 }
-
 function AwaitApproval(props) {
     const [approved, setApproved] = useState(null);
+    const [prevApproved, setPrevApproved] = useState(null);
     const [onWall, setOnWall] = useState(false);
+    const [transition, setTransition] = useState(true);
     const [dataLength, setDataLength] = useState(0);
     const [queueLength, setQueueLength] = useState(0);
     const [place, setPlace] = useState(0);
@@ -509,8 +580,18 @@ function AwaitApproval(props) {
     } = useQuery(QUEUE_AWAIT_WALL, {
         pollInterval: 500,
     });
-    if (awaitLoading || queueLoading || wallLoading || onWallLoading)
-        return <Loader />;
+    useEffect(() => {
+        if (approved !== prevApproved) {
+            setTransition(false);
+            console.log("Out");
+            setTimeout(() => {
+                setPrevApproved(approved);
+                setTransition(true);
+                console.log("In");
+            }, 500);
+        }
+    }, [approved, prevApproved]);
+    if (awaitLoading || queueLoading || wallLoading || onWallLoading) return "";
     if (awaitError || queueError || wallError || onWallError) return <Error />;
     /* eslint-enable no-unused-vars */
     if (awaitData && queueData && wallData && onWallData) {
@@ -564,114 +645,128 @@ function AwaitApproval(props) {
     if (place !== 0) {
         return (
             <section id="add-word">
-                <div className="row mt-5">
-                    {approved === null ? (
-                        <>
-                            <div className="col-12 text-center">
-                                <ThinkingFace />
-                            </div>
-                            <div className="cw-response-info-text col-10 offset-1 mt-3">
-                                Hold tight! Your response is awaiting approval
-                                from out moderator.
-                            </div>
-                            <div className="cw-response-info-bold col-10 offset-1 mt-3">
-                                Your response is{" "}
-                                <div className="cw-response-info-green">
-                                    number {place}
-                                </div>{" "}
-                                in the queue.
-                            </div>
-                            <div className="cw-response-info-text col-10 offset-1 mt-3">
-                                Please do not leave this page or you will have
-                                to start again...
-                            </div>
-                        </>
-                    ) : approved ? (
-                        <>
-                            <div className="col-12 text-center mb-3">
-                                <SmilingFace />
-                            </div>
-                            <div className="cw-response-info-green col-10 offset-1 mt-3">
-                                Your response has been approved!
-                            </div>
-                            {onWallData.responses.data.length >= 8 ? (
-                                <div className="cw-response-info-bold col-10 offset-1 mt-3">
-                                    Sorry!
-                                </div>
-                            ) : onWall ? (
-                                <div className="cw-response-info-bold col-10 offset-1 mt-3">
-                                    Your response is on the wall!
-                                </div>
+                <CSSTransition
+                    in={transition}
+                    timeout={1000}
+                    classNames={"transition"}>
+                    <>
+                        <div className="row mt-3">
+                            {prevApproved === null ? (
+                                <>
+                                    <div className="col-12 text-center">
+                                        <ThinkingFace />
+                                    </div>
+                                    <div className="cw-response-info-text col-10 offset-1 mt-3">
+                                        Hold tight! Your response is awaiting
+                                        approval from out moderator.
+                                    </div>
+                                    <div className="cw-response-info-bold col-10 offset-1 mt-3">
+                                        Your response is{" "}
+                                        <div className="cw-response-info-green">
+                                            number {place}
+                                        </div>{" "}
+                                        in the queue.
+                                    </div>
+                                    <div className="cw-response-info-text col-10 offset-1 mt-3">
+                                        Please do not leave this page or you
+                                        will have to start again...
+                                    </div>
+                                </>
+                            ) : prevApproved ? (
+                                <>
+                                    <div className="col-12 text-center mb-3">
+                                        <SmilingFace />
+                                    </div>
+                                    <div className="cw-response-info-green col-10 offset-1 mt-3">
+                                        Your response has been approved!
+                                    </div>
+                                    {onWallData.responses.data.length >= 8 ? (
+                                        <div className="cw-response-info-bold col-10 offset-1 mt-3">
+                                            Sorry!
+                                        </div>
+                                    ) : onWall ? (
+                                        <div className="cw-response-info-bold col-10 offset-1 mt-3">
+                                            Your response is on the wall!
+                                        </div>
+                                    ) : (
+                                        <div className="cw-response-info-bold col-10 offset-1 mt-3">
+                                            Your response is{" "}
+                                            <div className="cw-response-info-green">
+                                                number {wallPlace}
+                                            </div>{" "}
+                                            in the queue for the wall.
+                                        </div>
+                                    )}
+                                    {onWallData.responses.data.length >= 8 ? (
+                                        <div className="cw-response-info-bold col-10 offset-1 mt-3">
+                                            Responses for this question are
+                                            full. Please try again with the next
+                                            question.
+                                        </div>
+                                    ) : onWall ? (
+                                        ""
+                                    ) : (
+                                        <div className="cw-response-info-text col-10 offset-1 mt-3">
+                                            Please be patient, your response
+                                            will appear on the wall shortly.
+                                        </div>
+                                    )}
+                                </>
                             ) : (
-                                <div className="cw-response-info-bold col-10 offset-1 mt-3">
-                                    Your response is{" "}
-                                    <div className="cw-response-info-green">
-                                        number {wallPlace}
-                                    </div>{" "}
-                                    in the queue for the wall.
-                                </div>
+                                <>
+                                    <div className="col-12 text-center">
+                                        <SadFace />
+                                    </div>
+                                    <div className="cw-response-info-red col-10 offset-1 mt-3">
+                                        {
+                                            awaitData.response.data.attributes
+                                                .reason
+                                        }
+                                    </div>
+                                    <div className="cw-response-info-text col-10 offset-1 mt-3">
+                                        Please try again or visit our help
+                                        section for more info.
+                                    </div>
+                                </>
                             )}
-                            {onWallData.responses.data.length >= 8 ? (
-                                <div className="cw-response-info-bold col-10 offset-1 mt-3">
-                                    Responses for this question are full. Please
-                                    try again with the next question.
-                                </div>
-                            ) : onWall ? (
-                                ""
-                            ) : (
-                                <div className="cw-response-info-text col-10 offset-1 mt-3">
-                                    Please be patient, your response will appear
-                                    on the wall shortly.
-                                </div>
-                            )}
-                        </>
-                    ) : (
-                        <>
-                            <div className="col-12 text-center">
-                                <SadFace />
-                            </div>
-                            <div className="cw-response-info-red col-10 offset-1 mt-3">
-                                {awaitData.response.data.attributes.reason}
-                            </div>
-                            <div className="cw-response-info-text col-10 offset-1 mt-3">
-                                Please try again or visit our help section for
-                                more info.
-                            </div>
-                        </>
-                    )}
-                </div>
-                {approved !== null ? (
-                    <div className="row fade-in mt-4">
-                        <div className="col-10 offset-1">
-                            <button
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    window.location.reload();
-                                }}
-                                className="btn btn-climate">
-                                Start again
-                            </button>
                         </div>
-                    </div>
-                ) : (
-                    ""
-                )}
-                <div className="container mb-5 info-row">
-                    <div className="row">
-                        <div className="col-10 text-end">
-                            <img
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    document.getElementById("info").showModal();
-                                    document.body.style.overflow = "hidden";
-                                }}
-                                className="await-help-icon"
-                                src={Help}
-                                alt="Help"
-                            />
+                        {prevApproved !== null ? (
+                            <div className="row fade-in mt-4">
+                                <div className="col-10 offset-1">
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            window.location.reload();
+                                        }}
+                                        className="btn btn-climate start-again">
+                                        Start again
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            ""
+                        )}
+                        <div className="container mb-5 info-row">
+                            <div className="row">
+                                <div className="col-10 text-end">
+                                    <img
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            document
+                                                .getElementById("info")
+                                                .showModal();
+                                            document.body.style.overflow =
+                                                "hidden";
+                                        }}
+                                        className="await-help-icon"
+                                        src={Help}
+                                        alt="Help"
+                                    />
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
+                    </>
+                </CSSTransition>
             </section>
         );
     }
@@ -747,7 +842,7 @@ function Splash() {
     return (
         <div className="floating fade-out">
             <div className="container">
-                <div className="row mt-5">
+                <div className="row">
                     <div className="col-10 offset-1 mt-4 text-center">
                         <h1 className="cw-sub">Welcome to</h1>
                     </div>
@@ -800,10 +895,10 @@ function ThinkingFace() {
 function SmilingFace() {
     return <img className="smile" src={Smile} alt="Smile" />;
 }
-
 function SadFace() {
     return <img className="sad" src={Sad} alt="Sad" />;
 }
+/* eslint-disable no-unused-vars */
 function Loader() {
     return (
         <div className="row">
@@ -815,6 +910,7 @@ function Loader() {
         </div>
     );
 }
+/* eslint-enable no-unused-vars */
 function Error() {
     return (
         <div className="error">

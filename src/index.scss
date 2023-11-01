@@ -308,6 +308,9 @@ dialog {
     box-shadow: 12.5px 12.5px 10px rgba(0, 0, 0, 0.025),
         100px 100px 80px rgba(0, 0, 0, 0.05);
 }
+.start-again {
+    font-size: 12pt !important;
+}
 .info-link {
     font-family: "Outfit";
     font-weight: 200;
@@ -457,4 +460,86 @@ dialog {
         opacity: 0;
         z-index: -1;
     }
+}
+.fade-out-info {
+    animation: fadeOutInfo ease 0.33s;
+    -webkit-animation: fadeOutInfo ease 0.33s;
+    -moz-animation: fadeOutInfo ease 0.33s;
+    -o-animation: fadeOutInfo ease 0.33s;
+    -ms-animation: fadeOutInfo ease 0.33s;
+    animation-fill-mode: forwards;
+}
+@keyframes fadeOutInfo {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        z-index: -1;
+    }
+}
+
+@-moz-keyframes fadeOutInfo {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        z-index: -1;
+    }
+}
+
+@-webkit-keyframes fadeOutInfo {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        z-index: -1;
+    }
+}
+
+@-o-keyframes fadeOutInfo {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        z-index: -1;
+    }
+}
+
+@-ms-keyframes fadeOutInfo {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        z-index: -1;
+    }
+}
+.transition-exit {
+    opacity: 1;
+}
+
+.transition-exit-active {
+    opacity: 0;
+    transition: opacity 500ms;
+}
+
+.transition-exit-done {
+    opacity: 0;
+}
+
+.transition-enter {
+    opacity: 0;
+}
+
+.transition-enter-active {
+    opacity: 1;
+    transition: opacity 500ms;
+}
+
+.transition-enter-done {
+    opacity: 1;
 }
