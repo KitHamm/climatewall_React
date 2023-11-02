@@ -59,7 +59,7 @@ export const CURRENT_QUESTION = gql`
 `;
 
 export const AWAIT_APPROVAL = gql`
-    query response($id: ID) {
+    query await_approval($id: ID) {
         response(id: $id) {
             data {
                 attributes {
@@ -73,9 +73,13 @@ export const AWAIT_APPROVAL = gql`
 `;
 
 export const QUEUE_AWAIT_APPROVAL = gql`
-    query {
+    query queue_await_approval($updated: DateTime, $question: String) {
         responses(
-            filters: { approved: { eq: null } }
+            filters: {
+                approved: { eq: null }
+                createdAt: { gte: $updated }
+                question: { eq: $question }
+            }
             sort: ["updatedAt:asc"]
         ) {
             data {
@@ -88,9 +92,40 @@ export const QUEUE_AWAIT_APPROVAL = gql`
     }
 `;
 
+export const ON_WALL = gql`
+    query on_wall($updated: DateTime, $question: String) {
+        responses(
+            filters: {
+                createdAt: { gte: $updated }
+                approved: { eq: true }
+                onWall: { eq: true }
+                question: { eq: $question }
+            }
+        ) {
+            data {
+                id
+                attributes {
+                    question
+                    response
+                    approved
+                    onWall
+                    createdAt
+                }
+            }
+        }
+    }
+`;
+
 export const GET_AWAITING = gql`
-    query responses {
-        responses(filters: { approved: { eq: null } }) {
+    query get_awaiting($updated: DateTime, $question: String) {
+        responses(
+            filters: {
+                approved: { eq: null }
+                question: { eq: $question }
+                createdAt: { gte: $updated }
+            }
+            sort: ["createdAt:asc"]
+        ) {
             data {
                 id
                 attributes {
@@ -105,12 +140,13 @@ export const GET_AWAITING = gql`
 `;
 
 export const QUEUE_AWAIT_WALL = gql`
-    query responses($updated: DateTime) {
+    query queue_await_wall($updated: DateTime, $question: String) {
         responses(
             filters: {
-                createdAt: { gte: $updated }
+                updatedAt: { gte: $updated }
                 approved: { eq: true }
                 onWall: { eq: false }
+                question: { eq: $question }
             }
             sort: ["updatedAt:asc"]
         ) {
@@ -122,29 +158,6 @@ export const QUEUE_AWAIT_WALL = gql`
                     approved
                     onWall
                     updatedAt
-                }
-            }
-        }
-    }
-`;
-
-export const ON_WALL = gql`
-    query responses($updated: DateTime) {
-        responses(
-            filters: {
-                createdAt: { gte: $updated }
-                approved: { eq: true }
-                onWall: { eq: true }
-            }
-        ) {
-            data {
-                id
-                attributes {
-                    question
-                    response
-                    approved
-                    onWall
-                    createdAt
                 }
             }
         }

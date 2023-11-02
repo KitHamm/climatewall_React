@@ -21,12 +21,12 @@ import Smile from "../images/smile.svg";
 import Sad from "../images/sad.svg";
 import Load from "../images/load.png";
 export default function Home() {
-    const { loading, error, data } = useQuery(QUESTIONS);
     const [transition, setTransition] = useState(true);
     const [view, setView] = useState(0);
     const [selectView, setSelectView] = useState(0);
     const [id, setId] = useState(0);
     const [questionUpdated, setQuestionUpdated] = useState("");
+    const { loading, error, data } = useQuery(QUESTIONS);
     const {
         loading: loadingQID,
         error: errorQID,
@@ -41,7 +41,6 @@ export default function Home() {
             setTimeout(() => {
                 setView(selectView);
                 setTransition(true);
-                console.log("Done");
             }, 500);
         }
     }, [view, selectView]);
@@ -97,6 +96,7 @@ export default function Home() {
                                     <Form
                                         onViewChange={handleChangeView}
                                         onIdChange={setId}
+                                        questionUpdatedAt={questionUpdated}
                                         question={
                                             data.questions.data[
                                                 dataQID.currentQuestion.data
@@ -107,6 +107,12 @@ export default function Home() {
                                 </>
                             ) : view === 2 ? (
                                 <AwaitApproval
+                                    question={
+                                        data.questions.data[
+                                            dataQID.currentQuestion.data
+                                                .attributes.number
+                                        ].attributes.question
+                                    }
                                     onViewChange={handleChangeView}
                                     questionUpdatedAt={questionUpdated}
                                     id={id}
@@ -252,7 +258,7 @@ function Landing(props) {
                             <div
                                 className="cw-sub-white"
                                 style={{ fontSize: "20px" }}>
-                                How will you response to the climate issues of
+                                How will you respond to the climate issues of
                                 today?
                             </div>
                         </div>
@@ -296,17 +302,32 @@ function Form(props) {
         loading: nullLoading,
         error: nullError,
         data: nullData,
-    } = useQuery(GET_AWAITING);
+    } = useQuery(GET_AWAITING, {
+        variables: {
+            question: props.question,
+            updated: props.questionUpdatedAt,
+        },
+    });
     const {
         loading: awaitWallLoading,
         error: awaitWallError,
         data: awaitWallData,
-    } = useQuery(QUEUE_AWAIT_WALL);
+    } = useQuery(QUEUE_AWAIT_WALL, {
+        variables: {
+            question: props.question,
+            updated: props.questionUpdatedAt,
+        },
+    });
     const {
         loading: onWallLoading,
         error: onWallError,
         data: onWallData,
-    } = useQuery(ON_WALL);
+    } = useQuery(ON_WALL, {
+        variables: {
+            question: props.question,
+            updated: props.questionUpdatedAt,
+        },
+    });
     const [
         addResponse,
         { loading: loadingResponse, error: errorResponse, data: dataResponse },
@@ -334,12 +355,10 @@ function Form(props) {
     }
     useEffect(() => {
         if (selectView !== view) {
-            console.log("out");
             setTransition(false);
             setTimeout(() => {
                 setView(selectView);
                 setTransition(true);
-                console.log("In");
             }, 500);
         }
     }, [view, selectView]);
@@ -365,7 +384,7 @@ function Form(props) {
                 8
             ) {
                 setView(1);
-                setSelectView(2);
+                setSelectView(1);
             }
         }
     }, [onWallData, awaitWallData, nullData]);
@@ -539,6 +558,7 @@ function Form(props) {
 }
 function AwaitApproval(props) {
     const [approved, setApproved] = useState(null);
+    const [questionChanged, setQuestionChanged] = useState(false);
     const [prevApproved, setPrevApproved] = useState(null);
     const [onWall, setOnWall] = useState(false);
     const [transition, setTransition] = useState(true);
@@ -548,12 +568,32 @@ function AwaitApproval(props) {
     const [wallPlace, setWallPlace] = useState(0);
     /* eslint-disable no-unused-vars */
     const {
+        loading,
+        error,
+        data,
+        stopPolling: stopPollingQID,
+    } = useQuery(QUESTIONS, {
+        pollInterval: 500,
+    });
+    const {
+        loading: loadingQID,
+        error: errorQID,
+        data: dataQID,
+        stopPolling: stopPollingQuestion,
+    } = useQuery(CURRENT_QUESTION, {
+        pollInterval: 500,
+    });
+    const {
         loading: onWallLoading,
         error: onWallError,
         data: onWallData,
         stopPolling: stopPollingWallData,
     } = useQuery(ON_WALL, {
         pollInterval: 500,
+        variables: {
+            question: props.question,
+            updated: props.questionUpdatedAt,
+        },
     });
     const {
         loading: awaitLoading,
@@ -571,6 +611,10 @@ function AwaitApproval(props) {
         stopPolling: stopPollingQueue,
     } = useQuery(QUEUE_AWAIT_APPROVAL, {
         pollInterval: 500,
+        variables: {
+            question: props.question,
+            updated: props.questionUpdatedAt,
+        },
     });
     const {
         loading: wallLoading,
@@ -579,18 +623,45 @@ function AwaitApproval(props) {
         stopPolling: stopPollingWall,
     } = useQuery(QUEUE_AWAIT_WALL, {
         pollInterval: 500,
+        variables: {
+            question: props.question,
+            updated: props.questionUpdatedAt,
+        },
     });
     useEffect(() => {
         if (approved !== prevApproved) {
             setTransition(false);
-            console.log("Out");
             setTimeout(() => {
                 setPrevApproved(approved);
                 setTransition(true);
-                console.log("In");
             }, 500);
         }
     }, [approved, prevApproved]);
+    useEffect(() => {
+        if (
+            props.question !==
+            data.questions.data[dataQID.currentQuestion.data.attributes.number]
+                .attributes.question
+        ) {
+            stopPolling();
+            stopPollingQueue();
+            stopPollingWall();
+            stopPollingWallData();
+            stopPollingQID();
+            stopPollingQuestion();
+            setQuestionChanged(true);
+        }
+    }, [
+        data,
+        dataQID,
+        props.question,
+        stopPolling,
+        stopPollingQID,
+        stopPollingQuestion,
+        stopPollingQueue,
+        stopPollingWall,
+        stopPollingWallData,
+    ]);
     if (awaitLoading || queueLoading || wallLoading || onWallLoading) return "";
     if (awaitError || queueError || wallError || onWallError) return <Error />;
     /* eslint-enable no-unused-vars */
@@ -628,18 +699,24 @@ function AwaitApproval(props) {
             stopPollingQueue();
             stopPollingWall();
             stopPollingWallData();
+            stopPollingQID();
+            stopPollingQuestion();
         }
         if (approved === false) {
             stopPolling();
             stopPollingQueue();
             stopPollingWall();
             stopPollingWallData();
+            stopPollingQID();
+            stopPollingQuestion();
         }
         if (approved && onWallData.responses.data.length >= 8) {
             stopPolling();
             stopPollingQueue();
             stopPollingWall();
             stopPollingWallData();
+            stopPollingQID();
+            stopPollingQuestion();
         }
     }
     if (place !== 0) {
@@ -651,14 +728,32 @@ function AwaitApproval(props) {
                     classNames={"transition"}>
                     <>
                         <div className="row mt-3">
-                            {prevApproved === null ? (
+                            {questionChanged ? (
+                                <>
+                                    <div className="col-12 text-center">
+                                        <SadFace />
+                                    </div>
+                                    <div className="cw-response-info-red col-10 offset-1 mt-3">
+                                        Oh no! The question on the wall has
+                                        changed!
+                                    </div>
+                                    <div className="cw-response-info-bold col-10 offset-1 mt-3">
+                                        We appreciate your response.
+                                    </div>
+                                    <div className="cw-response-info-text col-10 offset-1 mt-3">
+                                        But unfortunately it won't make it onto
+                                        the wall. Please try again with the new
+                                        question.
+                                    </div>
+                                </>
+                            ) : prevApproved === null ? (
                                 <>
                                     <div className="col-12 text-center">
                                         <ThinkingFace />
                                     </div>
                                     <div className="cw-response-info-text col-10 offset-1 mt-3">
                                         Hold tight! Your response is awaiting
-                                        approval from out moderator.
+                                        approval from our moderator.
                                     </div>
                                     <div className="cw-response-info-bold col-10 offset-1 mt-3">
                                         Your response is{" "}
@@ -730,7 +825,7 @@ function AwaitApproval(props) {
                                 </>
                             )}
                         </div>
-                        {prevApproved !== null ? (
+                        {prevApproved !== null || questionChanged ? (
                             <div className="row fade-in mt-4">
                                 <div className="col-10 offset-1">
                                     <button
