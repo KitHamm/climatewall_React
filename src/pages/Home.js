@@ -25,6 +25,7 @@ export default function Home() {
     const [view, setView] = useState(0);
     const [selectView, setSelectView] = useState(0);
     const [id, setId] = useState(0);
+    const [isFull, setIsFull] = useState(false);
     const [questionUpdated, setQuestionUpdated] = useState("");
     const { loading, error, data } = useQuery(QUESTIONS);
     const {
@@ -96,6 +97,8 @@ export default function Home() {
                                     <Form
                                         onViewChange={handleChangeView}
                                         onIdChange={setId}
+                                        isFull={isFull}
+                                        setIsFull={setIsFull}
                                         questionUpdatedAt={questionUpdated}
                                         question={
                                             data.questions.data[
@@ -113,6 +116,8 @@ export default function Home() {
                                                 .attributes.number
                                         ].attributes.question
                                     }
+                                    isFull={isFull}
+                                    setIsFull={setIsFull}
                                     onViewChange={handleChangeView}
                                     questionUpdatedAt={questionUpdated}
                                     id={id}
@@ -377,6 +382,7 @@ function Form(props) {
             ) {
                 setView(2);
                 setSelectView(2);
+                props.setIsFull(true);
             } else if (
                 onWallData.responses.data.length +
                     awaitWallData.responses.data.length +
@@ -387,7 +393,7 @@ function Form(props) {
                 setSelectView(1);
             }
         }
-    }, [onWallData, awaitWallData, nullData]);
+    }, [onWallData, awaitWallData, nullData, props]);
     if (awaitWallLoading || onWallLoading || nullLoading) return "";
     if (awaitWallError || onWallError || nullError) return <Error />;
     if (onWallData && awaitWallData && nullData) {
@@ -566,6 +572,7 @@ function AwaitApproval(props) {
     const [queueLength, setQueueLength] = useState(0);
     const [place, setPlace] = useState(0);
     const [wallPlace, setWallPlace] = useState(0);
+    const [lateFull, setLateFUll] = useState(false);
     /* eslint-disable no-unused-vars */
     const {
         loading,
@@ -662,6 +669,32 @@ function AwaitApproval(props) {
         stopPollingWall,
         stopPollingWallData,
     ]);
+    useEffect(() => {
+        if (props.isFull) {
+            stopPolling();
+            stopPollingQueue();
+            stopPollingWall();
+            stopPollingWallData();
+            stopPollingQID();
+            stopPollingQuestion();
+        }
+    }, [
+        props.isFull,
+        stopPolling,
+        stopPollingQID,
+        stopPollingQuestion,
+        stopPollingQueue,
+        stopPollingWall,
+        stopPollingWallData,
+    ]);
+    useEffect(() => {
+        if (
+            onWallData.responses.data.length + wallData.responses.data.length >=
+            8
+        ) {
+            setLateFUll(true);
+        }
+    }, [wallData, onWallData, setLateFUll]);
     if (awaitLoading || queueLoading || wallLoading || onWallLoading) return "";
     if (awaitError || queueError || wallError || onWallError) return <Error />;
     /* eslint-enable no-unused-vars */
@@ -710,14 +743,6 @@ function AwaitApproval(props) {
             stopPollingQID();
             stopPollingQuestion();
         }
-        if (approved && onWallData.responses.data.length >= 8) {
-            stopPolling();
-            stopPollingQueue();
-            stopPollingWall();
-            stopPollingWallData();
-            stopPollingQID();
-            stopPollingQuestion();
-        }
     }
     if (place !== 0) {
         return (
@@ -744,6 +769,23 @@ function AwaitApproval(props) {
                                         But unfortunately it won't make it onto
                                         the wall. Please try again with the new
                                         question.
+                                    </div>
+                                </>
+                            ) : props.isFull || lateFull ? (
+                                <>
+                                    <div className="col-12 text-center mb-3">
+                                        <SmilingFace />
+                                    </div>
+                                    <div className="cw-response-info-green col-10 offset-1 mt-3">
+                                        Thank you for your response!
+                                    </div>
+                                    <div className="cw-response-info-bold col-10 offset-1 mt-3">
+                                        Unfortunately responses for this
+                                        question are full.
+                                    </div>
+                                    <div className="cw-response-info-text col-10 offset-1 mt-3">
+                                        Please try again with the next question
+                                        to get your response on the wall.
                                     </div>
                                 </>
                             ) : prevApproved === null ? (
@@ -825,7 +867,10 @@ function AwaitApproval(props) {
                                 </>
                             )}
                         </div>
-                        {prevApproved !== null || questionChanged ? (
+                        {prevApproved !== null ||
+                        questionChanged ||
+                        props.isFull ||
+                        lateFull ? (
                             <div className="row fade-in mt-4">
                                 <div className="col-10 offset-1">
                                     <button
