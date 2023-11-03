@@ -567,6 +567,7 @@ function AwaitApproval(props) {
     const [questionChanged, setQuestionChanged] = useState(false);
     const [prevApproved, setPrevApproved] = useState(null);
     const [onWall, setOnWall] = useState(false);
+    const [totalPosition, setTotalPosition] = useState(10);
     const [transition, setTransition] = useState(true);
     const [dataLength, setDataLength] = useState(0);
     const [queueLength, setQueueLength] = useState(0);
@@ -688,13 +689,44 @@ function AwaitApproval(props) {
         stopPollingWallData,
     ]);
     useEffect(() => {
-        if (wallData && onWallData) {
+        if (awaitData && queueData && wallData && onWallData) {
             if (
-                onWallData.responses.data.length +
-                    wallData.responses.data.length >
-                8
+                queueLength !== queueData.responses.data.length &&
+                awaitData.response.data.attributes.approved === null
             ) {
-                setLateFUll(true);
+                for (let i = 0; i < queueData.responses.data.length; i++) {
+                    if (queueData.responses.data[i].id === props.id) {
+                        setPlace(i + 1);
+                        break;
+                    }
+                }
+                setQueueLength(queueData.responses.data.length);
+            }
+            if (
+                dataLength !== wallData.responses.data.length &&
+                awaitData.response.data.attributes.approved === true
+            ) {
+                for (let i = 0; i < wallData.responses.data.length; i++) {
+                    if (wallData.responses.data[i].id === props.id) {
+                        setWallPlace(i + 1);
+                        break;
+                    }
+                }
+                setDataLength(wallData.responses.data.length);
+            }
+            if (awaitData.response.data.attributes.approved !== approved) {
+                setApproved(awaitData.response.data.attributes.approved);
+            }
+            if (awaitData.response.data.attributes.onWall !== onWall) {
+                setOnWall(awaitData.response.data.attributes.onWall);
+                stopPolling();
+                stopPollingQueue();
+                stopPollingWall();
+                stopPollingWallData();
+                stopPollingQID();
+                stopPollingQuestion();
+            }
+            if (approved === false) {
                 stopPolling();
                 stopPollingQueue();
                 stopPollingWall();
@@ -704,10 +736,54 @@ function AwaitApproval(props) {
             }
         }
     }, [
-        wallData,
+        totalPosition,
+        setTotalPosition,
+        approved,
+        awaitData,
+        dataLength,
+        onWall,
         onWallData,
-        setLateFUll,
-        questionChanged,
+        props.id,
+        queueData,
+        queueLength,
+        stopPolling,
+        stopPollingQID,
+        stopPollingQuestion,
+        stopPollingQueue,
+        stopPollingWall,
+        stopPollingWallData,
+        wallData,
+    ]);
+    useEffect(() => {
+        if (wallData && onWallData) {
+            if (wallPlace !== 0) {
+                console.log(
+                    onWallData.responses.data.length +
+                        " | " +
+                        wallData.responses.data.length +
+                        " | " +
+                        wallPlace
+                );
+                if (
+                    onWallData.responses.data.length +
+                        wallData.responses.data.length >
+                        8 &&
+                    wallPlace > 8
+                ) {
+                    setLateFUll(true);
+                    stopPolling();
+                    stopPollingQueue();
+                    stopPollingWall();
+                    stopPollingWallData();
+                    stopPollingQID();
+                    stopPollingQuestion();
+                }
+            }
+        }
+    }, [
+        onWallData,
+        wallData,
+        wallPlace,
         stopPolling,
         stopPollingQID,
         stopPollingQuestion,
@@ -718,57 +794,6 @@ function AwaitApproval(props) {
     if (awaitLoading || queueLoading || wallLoading || onWallLoading) return "";
     if (awaitError || queueError || wallError || onWallError) return <Error />;
     /* eslint-enable no-unused-vars */
-    if (awaitData && queueData && wallData && onWallData) {
-        if (
-            queueLength !== queueData.responses.data.length &&
-            awaitData.response.data.attributes.approved === null
-        ) {
-            for (let i = 0; i < queueData.responses.data.length; i++) {
-                if (queueData.responses.data[i].id === props.id) {
-                    setPlace(i + 1);
-                    break;
-                }
-            }
-            setQueueLength(queueData.responses.data.length);
-        }
-        if (
-            dataLength !== wallData.responses.data.length &&
-            awaitData.response.data.attributes.approved === true
-        ) {
-            for (let i = 0; i < wallData.responses.data.length; i++) {
-                if (wallData.responses.data[i].id === props.id) {
-                    setWallPlace(i + 1);
-                    break;
-                }
-            }
-            setDataLength(wallData.responses.data.length);
-        }
-        if (awaitData.response.data.attributes.approved !== approved) {
-            setApproved(awaitData.response.data.attributes.approved);
-        }
-        if (awaitData.response.data.attributes.onWall !== onWall) {
-            setOnWall(awaitData.response.data.attributes.onWall);
-            stopPolling();
-            stopPollingQueue();
-            stopPollingWall();
-            stopPollingWallData();
-            stopPollingQID();
-            stopPollingQuestion();
-        }
-        if (approved === false) {
-            stopPolling();
-            stopPollingQueue();
-            stopPollingWall();
-            stopPollingWallData();
-            stopPollingQID();
-            stopPollingQuestion();
-        }
-    }
-    //console.log(
-    //    onWallData.responses.data.length +
-    //        " | " +
-    //        wallData.responses.data.length
-    //);
     if (place !== 0) {
         return (
             <section id="add-word">
