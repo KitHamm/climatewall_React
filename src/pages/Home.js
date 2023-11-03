@@ -688,19 +688,33 @@ function AwaitApproval(props) {
         stopPollingWallData,
     ]);
     useEffect(() => {
-        if (
-            onWallData.responses.data.length + wallData.responses.data.length >
-            8
-        ) {
-            setLateFUll(true);
-            stopPolling();
-            stopPollingQueue();
-            stopPollingWall();
-            stopPollingWallData();
-            stopPollingQID();
-            stopPollingQuestion();
+        if (wallData && onWallData) {
+            if (
+                onWallData.responses.data.length +
+                    wallData.responses.data.length >
+                8
+            ) {
+                setLateFUll(true);
+                stopPolling();
+                stopPollingQueue();
+                stopPollingWall();
+                stopPollingWallData();
+                stopPollingQID();
+                stopPollingQuestion();
+            }
         }
-    }, [wallData, onWallData, setLateFUll]);
+    }, [
+        wallData,
+        onWallData,
+        setLateFUll,
+        questionChanged,
+        stopPolling,
+        stopPollingQID,
+        stopPollingQuestion,
+        stopPollingQueue,
+        stopPollingWall,
+        stopPollingWallData,
+    ]);
     if (awaitLoading || queueLoading || wallLoading || onWallLoading) return "";
     if (awaitError || queueError || wallError || onWallError) return <Error />;
     /* eslint-enable no-unused-vars */
