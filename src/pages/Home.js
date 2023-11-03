@@ -689,10 +689,16 @@ function AwaitApproval(props) {
     ]);
     useEffect(() => {
         if (
-            onWallData.responses.data.length + wallData.responses.data.length >=
+            onWallData.responses.data.length + wallData.responses.data.length >
             8
         ) {
             setLateFUll(true);
+            stopPolling();
+            stopPollingQueue();
+            stopPollingWall();
+            stopPollingWallData();
+            stopPollingQID();
+            stopPollingQuestion();
         }
     }, [wallData, onWallData, setLateFUll]);
     if (awaitLoading || queueLoading || wallLoading || onWallLoading) return "";
@@ -744,6 +750,11 @@ function AwaitApproval(props) {
             stopPollingQuestion();
         }
     }
+    //console.log(
+    //    onWallData.responses.data.length +
+    //        " | " +
+    //        wallData.responses.data.length
+    //);
     if (place !== 0) {
         return (
             <section id="add-word">
