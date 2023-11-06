@@ -711,6 +711,8 @@ function AwaitApproval(props) {
                     if (wallData.responses.data[i].id === props.id) {
                         setWallPlace(i + 1);
                         break;
+                    } else {
+                        setWallPlace(0);
                     }
                 }
                 setDataLength(wallData.responses.data.length);
@@ -755,50 +757,26 @@ function AwaitApproval(props) {
         stopPollingWallData,
         wallData,
     ]);
+    /*eslint-disable react-hooks/exhaustive-deps*/
     useEffect(() => {
-        if (wallData && onWallData) {
+        if (onWallData) {
             if (wallPlace !== prevWallPlace) {
-                if (wallPlace !== 0) {
-                    /*console.log(
-                        onWallData.responses.data.length +
-                            " | " +
-                            wallData.responses.data.length +
-                            " | " +
-                            wallPlace
-                    );*/
-                    if (
-                        onWallData.responses.data.length +
-                            wallData.responses.data.length >
-                            8 &&
-                        onWallData.responses.data.length + wallPlace > 8
-                    ) {
-                        setLateFUll(true);
-                        stopPolling();
-                        stopPollingQueue();
-                        stopPollingWall();
-                        stopPollingWallData();
-                        stopPollingQID();
-                        stopPollingQuestion();
-                    }
+                if (onWallData.responses.data.length + wallPlace > 8) {
+                    setLateFUll(true);
+                    stopPolling();
+                    stopPollingQueue();
+                    stopPollingWall();
+                    stopPollingWallData();
+                    stopPollingQID();
+                    stopPollingQuestion();
                 }
                 setPrevWallPlace(wallPlace);
             }
         }
-    }, [
-        prevWallPlace,
-        onWallData,
-        wallData,
-        wallPlace,
-        stopPolling,
-        stopPollingQID,
-        stopPollingQuestion,
-        stopPollingQueue,
-        stopPollingWall,
-        stopPollingWallData,
-    ]);
+    }, [wallPlace]);
+    /*eslint-enable react-hooks/exhaustive-deps*/
     if (awaitLoading || queueLoading || wallLoading || onWallLoading) return "";
     if (awaitError || queueError || wallError || onWallError) return <Error />;
-    /* eslint-enable no-unused-vars */
     if (place !== 0) {
         return (
             <section id="add-word">
@@ -872,7 +850,7 @@ function AwaitApproval(props) {
                                     <div className="cw-response-info-green col-10 offset-1 mt-3">
                                         Your response has been approved!
                                     </div>
-                                    {onWallData.responses.data.length >= 8 ? (
+                                    {lateFull ? (
                                         <div className="cw-response-info-bold col-10 offset-1 mt-3">
                                             Sorry!
                                         </div>
@@ -889,7 +867,7 @@ function AwaitApproval(props) {
                                             in the queue for the wall.
                                         </div>
                                     )}
-                                    {onWallData.responses.data.length >= 8 ? (
+                                    {lateFull ? (
                                         <div className="cw-response-info-bold col-10 offset-1 mt-3">
                                             Responses for this question are
                                             full. Please try again with the next

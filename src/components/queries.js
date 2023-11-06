@@ -92,6 +92,31 @@ export const QUEUE_AWAIT_APPROVAL = gql`
     }
 `;
 
+export const QUEUE_AWAIT_WALL = gql`
+    query queue_await_wall($updated: DateTime, $question: String) {
+        responses(
+            filters: {
+                updatedAt: { gte: $updated }
+                approved: { eq: true }
+                onWall: { eq: false }
+                question: { eq: $question }
+            }
+            sort: ["updatedAt:asc"]
+        ) {
+            data {
+                id
+                attributes {
+                    question
+                    response
+                    approved
+                    onWall
+                    updatedAt
+                }
+            }
+        }
+    }
+`;
+
 export const ON_WALL = gql`
     query on_wall($updated: DateTime, $question: String) {
         responses(
@@ -133,31 +158,6 @@ export const GET_AWAITING = gql`
                     createdAt
                     approved
                     question
-                }
-            }
-        }
-    }
-`;
-
-export const QUEUE_AWAIT_WALL = gql`
-    query queue_await_wall($updated: DateTime, $question: String) {
-        responses(
-            filters: {
-                updatedAt: { gte: $updated }
-                approved: { eq: true }
-                onWall: { eq: false }
-                question: { eq: $question }
-            }
-            sort: ["updatedAt:asc"]
-        ) {
-            data {
-                id
-                attributes {
-                    question
-                    response
-                    approved
-                    onWall
-                    updatedAt
                 }
             }
         }
