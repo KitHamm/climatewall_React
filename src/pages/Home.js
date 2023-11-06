@@ -574,6 +574,7 @@ function AwaitApproval(props) {
     const [place, setPlace] = useState(0);
     const [wallPlace, setWallPlace] = useState(0);
     const [lateFull, setLateFUll] = useState(false);
+    const [prevWallPlace, setPrevWallPlace] = useState(0);
     /* eslint-disable no-unused-vars */
     const {
         loading,
@@ -590,6 +591,18 @@ function AwaitApproval(props) {
         stopPolling: stopPollingQuestion,
     } = useQuery(CURRENT_QUESTION, {
         pollInterval: 500,
+    });
+    const {
+        loading: wallLoading,
+        error: wallError,
+        data: wallData,
+        stopPolling: stopPollingWall,
+    } = useQuery(QUEUE_AWAIT_WALL, {
+        pollInterval: 500,
+        variables: {
+            question: props.question,
+            updated: props.questionUpdatedAt,
+        },
     });
     const {
         loading: onWallLoading,
@@ -618,18 +631,6 @@ function AwaitApproval(props) {
         data: queueData,
         stopPolling: stopPollingQueue,
     } = useQuery(QUEUE_AWAIT_APPROVAL, {
-        pollInterval: 500,
-        variables: {
-            question: props.question,
-            updated: props.questionUpdatedAt,
-        },
-    });
-    const {
-        loading: wallLoading,
-        error: wallError,
-        data: wallData,
-        stopPolling: stopPollingWall,
-    } = useQuery(QUEUE_AWAIT_WALL, {
         pollInterval: 500,
         variables: {
             question: props.question,
@@ -756,31 +757,35 @@ function AwaitApproval(props) {
     ]);
     useEffect(() => {
         if (wallData && onWallData) {
-            if (wallPlace !== 0) {
-                console.log(
-                    onWallData.responses.data.length +
-                        " | " +
-                        wallData.responses.data.length +
-                        " | " +
-                        wallPlace
-                );
-                if (
-                    onWallData.responses.data.length +
-                        wallData.responses.data.length >
-                        8 &&
-                    wallPlace > 8
-                ) {
-                    setLateFUll(true);
-                    stopPolling();
-                    stopPollingQueue();
-                    stopPollingWall();
-                    stopPollingWallData();
-                    stopPollingQID();
-                    stopPollingQuestion();
+            if (wallPlace !== prevWallPlace) {
+                if (wallPlace !== 0) {
+                    /*console.log(
+                        onWallData.responses.data.length +
+                            " | " +
+                            wallData.responses.data.length +
+                            " | " +
+                            wallPlace
+                    );*/
+                    if (
+                        onWallData.responses.data.length +
+                            wallData.responses.data.length >
+                            8 &&
+                        onWallData.responses.data.length + wallPlace > 8
+                    ) {
+                        setLateFUll(true);
+                        stopPolling();
+                        stopPollingQueue();
+                        stopPollingWall();
+                        stopPollingWallData();
+                        stopPollingQID();
+                        stopPollingQuestion();
+                    }
                 }
+                setPrevWallPlace(wallPlace);
             }
         }
     }, [
+        prevWallPlace,
         onWallData,
         wallData,
         wallPlace,
