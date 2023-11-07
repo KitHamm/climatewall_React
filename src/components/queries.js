@@ -163,3 +163,15 @@ export const GET_AWAITING = gql`
         }
     }
 `;
+
+export const GET_MAX_NUM_RESPONSES = gql`
+    query maxResponses {
+        maxResponse {
+            data {
+                attributes {
+                    amount
+                }
+            }
+        }
+    }
+`;

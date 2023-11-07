@@ -11,6 +11,7 @@ import {
     QUEUE_AWAIT_WALL,
     ON_WALL,
     GET_AWAITING,
+    GET_MAX_NUM_RESPONSES,
 } from "../components/queries";
 import falmouthExeterPlus from "../images/falmoutexeterplus.svg";
 import SU from "../images/su.svg";
@@ -25,6 +26,7 @@ export default function Home() {
     const [view, setView] = useState(0);
     const [selectView, setSelectView] = useState(0);
     const [id, setId] = useState(0);
+    const [maxNum, setMaxNum] = useState(0);
     const [isFull, setIsFull] = useState(false);
     const [questionUpdated, setQuestionUpdated] = useState("");
     const { loading, error, data } = useQuery(QUESTIONS);
@@ -33,6 +35,11 @@ export default function Home() {
         error: errorQID,
         data: dataQID,
     } = useQuery(CURRENT_QUESTION);
+    const {
+        loading: loadingMaxNum,
+        error: errorMaxNum,
+        data: dataMaxNum,
+    } = useQuery(GET_MAX_NUM_RESPONSES);
     function handleChangeView(newView) {
         setSelectView(newView);
     }
@@ -52,10 +59,15 @@ export default function Home() {
             );
         }
     }, [dataQID]);
+    useEffect(() => {
+        if (dataMaxNum) {
+            setMaxNum(dataMaxNum.maxResponse.data.attributes.amount);
+        }
+    }, [dataMaxNum]);
     let display = null;
-    if (loading || loadingQID) return <Splash />;
-    if (error || errorQID) return <Error />;
-    if (data && dataQID) {
+    if (loading || loadingQID || loadingMaxNum) return <Splash />;
+    if (error || errorQID || errorMaxNum) return <Error />;
+    if (data && dataQID && dataMaxNum) {
         switch (view) {
             case 0:
                 display = <Landing onViewChange={handleChangeView} />;
@@ -106,6 +118,7 @@ export default function Home() {
                                                     .attributes.number
                                             ].attributes.question
                                         }
+                                        maxNum={maxNum}
                                     />
                                 </>
                             ) : view === 2 ? (
@@ -121,6 +134,7 @@ export default function Home() {
                                     onViewChange={handleChangeView}
                                     questionUpdatedAt={questionUpdated}
                                     id={id}
+                                    maxNum={maxNum}
                                 />
                             ) : (
                                 ""
@@ -378,7 +392,7 @@ function Form(props) {
             if (
                 onWallData.responses.data.length +
                     awaitWallData.responses.data.length >=
-                8
+                props.maxNum
             ) {
                 setView(2);
                 setSelectView(2);
@@ -387,7 +401,7 @@ function Form(props) {
                 onWallData.responses.data.length +
                     awaitWallData.responses.data.length +
                     nullData.responses.data.length >=
-                8
+                props.maxNum
             ) {
                 setView(1);
                 setSelectView(1);
@@ -761,7 +775,10 @@ function AwaitApproval(props) {
     useEffect(() => {
         if (onWallData) {
             if (wallPlace !== prevWallPlace) {
-                if (onWallData.responses.data.length + wallPlace > 8) {
+                if (
+                    onWallData.responses.data.length + wallPlace >
+                    props.maxNum
+                ) {
                     setLateFUll(true);
                     stopPolling();
                     stopPollingQueue();
