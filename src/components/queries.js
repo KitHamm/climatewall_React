@@ -32,10 +32,7 @@ export const ADD_qRESPONSE = gql`
 
 export const QUESTIONS = gql`
     query {
-        questions(
-            filters: { approved: { eq: true } }
-            sort: ["createdAt:asc"]
-        ) {
+        questions(filters: { approved: { eq: true } }, sort: ["order:asc"]) {
             data {
                 attributes {
                     question
