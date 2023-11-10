@@ -17,7 +17,7 @@ export default function Terms(props) {
                     </div>
                     <div className="cw-terms mt-4">
                         All responses posted are being moderated by a University
-                        representative
+                        representative.
                     </div>
                     <div className="cw-terms mt-4">
                         As the #ClimateWall is a shared public space we require
