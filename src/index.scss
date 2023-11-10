@@ -120,6 +120,10 @@ dialog {
 a {
     font-family: "Outfit" !important;
     color: $cwGreen !important;
+    text-decoration: none !important;
+}
+a:focus-visible {
+    outline: none !important;
 }
 /// START PAGE
 #info {
