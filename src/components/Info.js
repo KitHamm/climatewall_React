@@ -202,8 +202,8 @@ export default function InfoPage(props) {
                                 </li>
                                 <li>
                                     <p>
-                                        Glib replies - as in ‘waste of time;’
-                                        this is stupid’ etc.
+                                        Glib replies - as in ‘waste of time’,
+                                        ‘this is stupid’ etc.
                                     </p>
                                 </li>
                                 <li>
