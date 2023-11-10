@@ -90,7 +90,7 @@ dialog {
 }
 /// LANDING PAGE
 .floating {
-    color: white;
+    color: $bgGreen;
     background-image: url("images/splashBG.png");
     background-size: cover;
     background-repeat: no-repeat;
@@ -105,6 +105,15 @@ dialog {
 .link {
     display: inline-flex;
     color: $cwGreen;
+}
+.floating-load {
+    color: $bgGreen;
+    position: absolute;
+    background-color: $bgGreen;
+    z-index: 2;
+    height: 100%;
+    width: 100%;
+    top: 0;
 }
 /// Error Page
 .error {
@@ -383,11 +392,11 @@ a:focus-visible {
 }
 
 .fade-out {
-    animation: fadeOut ease 5s;
-    -webkit-animation: fadeOut ease 5s;
-    -moz-animation: fadeOut ease 5s;
-    -o-animation: fadeOut ease 5s;
-    -ms-animation: fadeOut ease 5s;
+    animation: fadeOut ease 4s;
+    -webkit-animation: fadeOut ease 4s;
+    -moz-animation: fadeOut ease 4s;
+    -o-animation: fadeOut ease 4s;
+    -ms-animation: fadeOut ease 4s;
     animation-fill-mode: forwards;
 }
 @keyframes fadeOut {
@@ -531,6 +540,93 @@ a:focus-visible {
         z-index: -1;
     }
 }
+.fade-out-intro {
+    animation: fadeOutIntro ease 2s;
+    -webkit-animation: fadeOutIntro ease 2s;
+    -moz-animation: fadeOutIntro ease 2s;
+    -o-animation: fadeOutIntro ease 2s;
+    -ms-animation: fadeOutIntro ease 2s;
+    animation-fill-mode: forwards;
+}
+@keyframes fadeOutIntro {
+    0% {
+        z-index: 2;
+        opacity: 1;
+    }
+    99% {
+        opacity: 0;
+        z-index: 1;
+    }
+    100% {
+        opacity: 0;
+        z-index: 11;
+    }
+}
+
+@-moz-keyframes fadeOutIntro {
+    0% {
+        z-index: 2;
+        opacity: 1;
+    }
+    99% {
+        opacity: 0;
+        z-index: 1;
+    }
+    100% {
+        opacity: 0;
+        z-index: 11;
+    }
+}
+
+@-webkit-keyframes fadeOutIntro {
+    0% {
+        z-index: 2;
+        opacity: 1;
+    }
+    50% {
+        z-index: 2;
+        opacity: 1;
+    }
+    99% {
+        opacity: 0;
+        z-index: 2;
+    }
+    100% {
+        opacity: 0;
+        z-index: 11;
+    }
+}
+
+@-o-keyframes fadeOutIntro {
+    0% {
+        z-index: 2;
+        opacity: 1;
+    }
+    99% {
+        opacity: 0;
+        z-index: 1;
+    }
+    100% {
+        opacity: 0;
+        z-index: 11;
+    }
+}
+
+@-ms-keyframes fadeOutIntro {
+    0% {
+        z-index: 2;
+        opacity: 1;
+    }
+    99% {
+        opacity: 0;
+        z-index: 1;
+    }
+    100% {
+        opacity: 0;
+        z-index: 11;
+    }
+}
+
 .transition-exit {
     opacity: 1;
 }
