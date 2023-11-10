@@ -102,6 +102,10 @@ dialog {
     width: 100%;
     top: 0;
 }
+.link {
+    display: inline-flex;
+    color: $cwGreen;
+}
 /// Error Page
 .error {
     background-image: url("images/background.png");
@@ -112,6 +116,10 @@ dialog {
     width: 100vw;
     top: 0;
     left: 0;
+}
+a {
+    font-family: "Outfit" !important;
+    color: $cwGreen !important;
 }
 /// START PAGE
 #info {
