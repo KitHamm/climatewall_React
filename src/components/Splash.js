@@ -2,14 +2,10 @@ import falmouthExeterPlus from "../images/falmoutexeterplus.svg";
 import SU from "../images/su.svg";
 import FalUni from "../images/FalUni.svg";
 import ExeterLogo from "../images/exeter-uni-logo.svg";
-import Loader from "./Loader";
 
 export default function Splash() {
     return (
         <>
-            <div className="floating-load fade-out-intro">
-                <Loader />
-            </div>
             <div className="floating fade-out">
                 <div className="container">
                     <div className="row">

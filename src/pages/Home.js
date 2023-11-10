@@ -12,9 +12,8 @@ import Landing from "../components/Landing";
 import Form from "../components/Form";
 import AwaitApproval from "../components/AwaitApproval";
 import Terms from "../components/Terms";
-import Splash from "../components/Splash";
 import Error from "../components/Error";
-import Loader from "../components/Loader";
+import Splash from "../components/Splash";
 
 export default function Home() {
     const [transition, setTransition] = useState(true);
@@ -60,12 +59,7 @@ export default function Home() {
         }
     }, [dataMaxNum]);
     let display = null;
-    if (loading || loadingQID || loadingMaxNum)
-        return (
-            <div className="floating-load fade-out-intro">
-                <Loader />
-            </div>
-        );
+    if (loading || loadingQID || loadingMaxNum) return <Splash />;
     if (error || errorQID || errorMaxNum) return <Error />;
     if (data && dataQID && dataMaxNum) {
         switch (view) {
