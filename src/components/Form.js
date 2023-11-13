@@ -16,6 +16,18 @@ export default function Form(props) {
     const [transition, setTransition] = useState(true);
     const [view, setView] = useState(0);
     const [selectView, setSelectView] = useState(0);
+    var ranges = [
+        "\ud83c[\udf00-\udfff]", // U+1F300 to U+1F3FF
+        "\ud83d[\udc00-\ude4f]",
+        "\uD83D[\uDC00-\uDFFF]", // U+1F400 to U+1F64F
+        "\ud83d[\ude80-\udeff]",
+        "[\uE000-\uF8FF]",
+        "\uD83C[\uDC00-\uDFFF]",
+        "[\u2580-\u27BF]",
+        "\uD83E[\uDD10-\uDDFF]",
+        // U+1F680 to U+1F6FF
+    ];
+
     /* eslint-disable no-unused-vars */
     const {
         loading: nullLoading,
@@ -228,7 +240,15 @@ export default function Form(props) {
                                         value={response}
                                         placeholder="Start typing..."
                                         onChange={(e) => {
-                                            setResponse(e.target.value);
+                                            setResponse(
+                                                e.target.value.replace(
+                                                    new RegExp(
+                                                        ranges.join("|"),
+                                                        "g"
+                                                    ),
+                                                    ""
+                                                )
+                                            );
                                         }}
                                     />
                                 </div>
