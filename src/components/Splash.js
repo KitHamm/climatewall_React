@@ -16,7 +16,7 @@ export default function Splash() {
                             <h1 className="cw-title">#ClimateWall</h1>
                         </div>
                         <div className="col-10 mt-5 offset-1 text-center">
-                            <h1 className="cw-sub">St Luke's Campus</h1>
+                            <h1 className="cw-sub">Streatham Campus</h1>
                         </div>
                         <div className="col-12 mt-5 text-center">
                             <img
