@@ -79,10 +79,17 @@ export default function Form(props) {
                 question: questionResp,
                 response: response.toLowerCase(),
             },
-        });
-        addQResponse({
-            variables: { question: questionResp, response: response },
-        });
+        })
+            .then(() => {
+                addQResponse({
+                    variables: { question: questionResp, response: response },
+                }).catch((e) => {
+                    console.log(e);
+                });
+            })
+            .catch((e) => {
+                console.log(e);
+            });
     }
     useEffect(() => {
         if (selectView !== view) {

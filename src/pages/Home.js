@@ -40,7 +40,7 @@ export default function Home() {
     }
     useEffect(() => {
         var dateNow = new Date();
-        if (dateNow.getHours() < 16 || dateNow.getHours() > 21) {
+        if (dateNow.getHours() < 16 || dateNow.getHours() >= 21) {
             setClosed(true);
         }
     }, [setClosed]);
