@@ -16,6 +16,7 @@ import Error from "../components/Error";
 import Splash from "../components/Splash";
 
 export default function Home() {
+    const [closed, setClosed] = useState(false);
     const [transition, setTransition] = useState(true);
     const [view, setView] = useState(0);
     const [selectView, setSelectView] = useState(0);
@@ -37,6 +38,12 @@ export default function Home() {
     function handleChangeView(newView) {
         setSelectView(newView);
     }
+    useEffect(() => {
+        var dateNow = new Date();
+        if (dateNow.getHours() < 16 || dateNow.getHours() > 21) {
+            setClosed(true);
+        }
+    }, [setClosed]);
     useEffect(() => {
         if (selectView !== view) {
             setTransition(false);
@@ -66,7 +73,10 @@ export default function Home() {
             case 0:
                 display = (
                     <>
-                        <Landing onViewChange={handleChangeView} />
+                        <Landing
+                            closed={closed}
+                            onViewChange={handleChangeView}
+                        />
                     </>
                 );
                 break;

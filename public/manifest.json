@@ -1,25 +1,25 @@
 {
-  "short_name": "React App",
-  "name": "ClimateWall",
-  "icons": [
-    {
-      "src": "screenshot.png",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "screenshot.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "screenshot.png",
-      "type": "image/png",
-      "sizes": "512x512"
-    }
-  ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+    "short_name": "ClimateWall",
+    "name": "ClimateWall",
+    "icons": [
+        {
+            "src": "screenshot.png",
+            "sizes": "140x140",
+            "type": "image/x-icon"
+        },
+        {
+            "src": "screenshot.png",
+            "type": "image/png",
+            "sizes": "140x140"
+        },
+        {
+            "src": "screenshot.png",
+            "type": "image/png",
+            "sizes": "140x140"
+        }
+    ],
+    "start_url": ".",
+    "display": "standalone",
+    "theme_color": "#000000",
+    "background_color": "#ffffff"
 }
