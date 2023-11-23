@@ -45,7 +45,7 @@ export default function Splash() {
                                 src={falmouthExeterPlus}
                                 alt="Falmouth Exeter Plus"
                             />
-    </div>*/}
+                    </div>*/}
                     </div>
                 </div>
             </div>
