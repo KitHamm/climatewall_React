@@ -47,8 +47,8 @@ export default function Landing(props) {
                                 <div
                                     className="cw-sub-white"
                                     style={{ fontSize: "20px" }}>
-                                    Please either refresh or visit The Forum at
-                                    Streatham Campus during operating hours to
+                                    Please either refresh or visit The Stannary / The Student Union at
+                                    Penryn Campus during operating hours to
                                     take part.
                                 </div>
                             </div>

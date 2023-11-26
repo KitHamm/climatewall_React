@@ -8,7 +8,7 @@ export default function Splash() {
         <>
             <div className="floating fade-out">
                 <div className="container">
-                    <div className="row mt-5">
+                    <div className="row ">
                         <div className="col-10 offset-1 mt-5 text-center">
                             <h1 className="cw-sub">Welcome to</h1>
                         </div>
@@ -16,7 +16,7 @@ export default function Splash() {
                             <h1 className="cw-title">#ClimateWall</h1>
                         </div>
                         <div className="col-10 mt-5 offset-1 text-center">
-                            <h1 className="cw-sub">Streatham Campus</h1>
+                            <h1 className="cw-sub">Penryn Campus</h1>
                         </div>
                         <div className="col-12 mt-5 text-center">
                             <img
@@ -25,7 +25,7 @@ export default function Splash() {
                                 alt="University Of Exeter"
                             />
                         </div>
-                        {/*<div className="col-12">
+                        <div className="col-12">
                             <img
                                 className="splash-logo-fu"
                                 src={FalUni}
@@ -45,7 +45,7 @@ export default function Splash() {
                                 src={falmouthExeterPlus}
                                 alt="Falmouth Exeter Plus"
                             />
-                    </div>*/}
+                    </div>
                     </div>
                 </div>
             </div>
