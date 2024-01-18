@@ -2,7 +2,7 @@ import "./App.css";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import Home from "./pages/Home";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-export const url = "https://cms.plasticelephant.co.uk";
+export const url = process.env.REACT_APP_URL;
 const api = new ApolloClient({
     uri: url + "/graphql",
     cache: new InMemoryCache(),
