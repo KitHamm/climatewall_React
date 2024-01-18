@@ -29,7 +29,6 @@ export default function Terms(props) {
                     <div className="cw-sub-terms mt-4">
                         Terms and conditions
                     </div>
-                    {/*<div className="cw-terms-bold mt-4">Lorem ipsum</div>*/}
                     <div className="cw-terms mt-4">
                         All Users agree to comply with the rules in the{" "}
                         <div
@@ -43,23 +42,19 @@ export default function Terms(props) {
                         </div>
                         .
                     </div>
-                    {/*<div className="cw-terms-bold mt-4">Lorem ipsum</div>*/}
                     <div className="cw-terms mt-4">
                         All Users agree to respect the decision of the
                         moderator.
                     </div>
-                    {/*<div className="cw-terms-bold mt-4">Lorem ipsum</div>*/}
                     <div className="cw-terms mt-4">
                         All responses will remain anonymous – no personal
                         information will be collected or saved.
                     </div>
-                    {/*<div className="cw-terms-bold mt-4">Lorem ipsum</div>*/}
                     <div className="cw-terms mt-4">
                         All Users agree to have their anonymous responses saved
                         on a database for any future communications or
                         publicity.
                     </div>
-                    {/*<div className="cw-terms-bold mt-4">Lorem ipsum</div>*/}
                     <div className="cw-terms mt-4">
                         It is understood that the views and/or opinions
                         expressed on the Climate Wall are those of the
