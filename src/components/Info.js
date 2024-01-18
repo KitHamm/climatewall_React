@@ -1,3 +1,5 @@
+// Information and instruction page
+
 export default function InfoPage(props) {
     function handleClose() {
         document

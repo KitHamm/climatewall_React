@@ -1,6 +1,12 @@
-import { useState, useEffect } from "react";
+// Holding state for after a response has been submitted
+
+// Apollo imports
 import { useQuery } from "@apollo/client";
+// react imports
+import { useState, useEffect } from "react";
+// Library imports
 import { CSSTransition } from "react-transition-group";
+// gql query imports
 import {
     QUESTIONS,
     CURRENT_QUESTION,
@@ -9,6 +15,7 @@ import {
     ON_WALL,
     AWAIT_APPROVAL,
 } from "./queries";
+// component imports
 import Error from "./Error";
 import SadFace from "./SadFace";
 import SmilingFace from "./SmilingFace";
@@ -16,19 +23,28 @@ import ThinkingFace from "./ThinkingFace";
 import Help from "../images/help-button.svg";
 
 export default function AwaitApproval(props) {
+    // States
+    // response approved
     const [approved, setApproved] = useState(null);
-    const [questionChanged, setQuestionChanged] = useState(false);
     const [prevApproved, setPrevApproved] = useState(null);
+    // the question changed
+    const [questionChanged, setQuestionChanged] = useState(false);
+    // response is on the projection wall
     const [onWall, setOnWall] = useState(false);
+    // position in queue
     const [totalPosition, setTotalPosition] = useState(10);
-    const [transition, setTransition] = useState(true);
-    const [dataLength, setDataLength] = useState(0);
     const [queueLength, setQueueLength] = useState(0);
     const [place, setPlace] = useState(0);
-    const [wallPlace, setWallPlace] = useState(0);
-    const [lateFull, setLateFUll] = useState(false);
     const [prevWallPlace, setPrevWallPlace] = useState(0);
+    const [wallPlace, setWallPlace] = useState(0);
+    const [dataLength, setDataLength] = useState(0);
+    // transition state
+    const [transition, setTransition] = useState(true);
+    // the wall is full while waiting
+    const [lateFull, setLateFUll] = useState(false);
     /* eslint-disable no-unused-vars */
+
+    // queries for holding states
     const {
         loading,
         error,
@@ -90,6 +106,7 @@ export default function AwaitApproval(props) {
             updated: props.questionUpdatedAt,
         },
     });
+    // set queue place and check if question has changed while waiting
     useEffect(() => {
         if (approved !== prevApproved) {
             setTransition(false);
@@ -142,6 +159,7 @@ export default function AwaitApproval(props) {
         stopPollingWall,
         stopPollingWallData,
     ]);
+    // set queue place
     useEffect(() => {
         if (awaitData && queueData && wallData && onWallData) {
             if (
@@ -156,6 +174,7 @@ export default function AwaitApproval(props) {
                 }
                 setQueueLength(queueData.responses.data.length);
             }
+            // set queue place for appearing on the projection wall
             if (
                 dataLength !== wallData.responses.data.length &&
                 awaitData.response.data.attributes.approved === true
@@ -234,6 +253,7 @@ export default function AwaitApproval(props) {
     if (awaitLoading || queueLoading || wallLoading || onWallLoading) return "";
     if (awaitError || queueError || wallError || onWallError) return <Error />;
     if (place !== 0) {
+        // displays for holding states and changes
         return (
             <section id="add-word">
                 <CSSTransition

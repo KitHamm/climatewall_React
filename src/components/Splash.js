@@ -1,3 +1,6 @@
+// Splash screen for the landing page
+
+// image imports (changing when changing location)
 import falmouthExeterPlus from "../images/falmoutexeterplus.svg";
 import SU from "../images/su.svg";
 import FalUni from "../images/FalUni.svg";
@@ -45,7 +48,7 @@ export default function Splash() {
                                 src={falmouthExeterPlus}
                                 alt="Falmouth Exeter Plus"
                             />
-                    </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,5 +1,7 @@
+// import components
 import SadFace from "./SadFace";
 
+// Display for API errors
 export default function Error() {
     return (
         <div className="error">

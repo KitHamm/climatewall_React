@@ -1,3 +1,5 @@
+// Terms and conditions for taking part
+
 import InfoPage from "./Info";
 
 export default function Terms(props) {

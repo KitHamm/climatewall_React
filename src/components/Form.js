@@ -1,7 +1,10 @@
-import { useState, useEffect } from "react";
+// form for creating a response for the displayed question
+
+// Apollo imports
 import { useQuery, useMutation } from "@apollo/client";
-import { CSSTransition } from "react-transition-group";
-import Help from "../images/help-button.svg";
+// React imports
+import { useState, useEffect } from "react";
+// gql query imports
 import {
     GET_AWAITING,
     QUEUE_AWAIT_WALL,
@@ -9,13 +12,20 @@ import {
     ADD_RESPONSE,
     ADD_qRESPONSE,
 } from "./queries";
+
+// Library imports
+import { CSSTransition } from "react-transition-group";
+// component imports
+import Help from "../images/help-button.svg";
 import Error from "./Error";
 
 export default function Form(props) {
+    // states
     const [response, setResponse] = useState("");
     const [transition, setTransition] = useState(true);
     const [view, setView] = useState(0);
     const [selectView, setSelectView] = useState(0);
+    // trying to remove emojis from the form as it break the unity application
     var ranges = [
         "\ud83c[\udf00-\udfff]", // U+1F300 to U+1F3FF
         "\ud83d[\udc00-\ude4f]",
@@ -29,6 +39,7 @@ export default function Form(props) {
     ];
 
     /* eslint-disable no-unused-vars */
+    // Queries to determine the amount of responses already waiting for moderation or to make it onto the wall
     const {
         loading: nullLoading,
         error: nullError,
@@ -59,10 +70,12 @@ export default function Form(props) {
             updated: props.questionUpdatedAt,
         },
     });
+    // mutation to add the response to web responses
     const [
         addResponse,
         { loading: loadingResponse, error: errorResponse, data: dataResponse },
     ] = useMutation(ADD_RESPONSE);
+    // mutation to add response to all responses (wall and web)
     const [
         addQResponse,
         {
@@ -106,6 +119,7 @@ export default function Form(props) {
             props.onViewChange(2);
         }
     }, [dataResponse, dataQResponse, props]);
+    // calculate if the response may or may note make it onto the wall depending on the set number of maximum responses
     useEffect(() => {
         if (onWallData && awaitWallData && nullData) {
             if (
@@ -130,6 +144,7 @@ export default function Form(props) {
     if (awaitWallLoading || onWallLoading || nullLoading) return "";
     if (awaitWallError || onWallError || nullError) return <Error />;
     if (onWallData && awaitWallData && nullData) {
+        // switch case for if there have been a lot of responses
         switch (view) {
             case 1:
                 return (
